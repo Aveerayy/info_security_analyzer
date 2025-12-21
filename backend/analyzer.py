@@ -17,7 +17,7 @@ from PIL import Image
 
 # Azure OpenAI API configuration
 AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://isec-test.openai.azure.com/")
-AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4.1-mini")
+AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
 AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "Ec9mPzzD46GVWqfGGCMRPr90z8K2yHn9YsiYcHgG1lacARAlvYmFJQQJ99BEACYeBjFXJ3w3AAABACOGqz2f")
 AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2025-01-01-preview")
 
