@@ -3,8 +3,15 @@ fastapi>=0.109.0
 uvicorn[standard]>=0.27.0
 python-multipart>=0.0.6
 
-# Azure OpenAI
+# LLM Providers
+# OpenAI (also used for Azure OpenAI)
 openai>=1.12.0
+
+# Anthropic Claude
+anthropic>=0.34.0
+
+# Google Gemini
+google-generativeai>=0.7.0
 
 # PDF processing
 PyMuPDF>=1.23.0
@@ -14,4 +21,3 @@ Pillow>=10.2.0
 
 # Type hints
 pydantic>=2.5.0
-

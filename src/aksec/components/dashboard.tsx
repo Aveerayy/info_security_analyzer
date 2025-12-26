@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { UploadIcon, ActivityIcon, ShieldIcon, RefreshCwIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { UploadIcon, ActivityIcon, ShieldIcon, RefreshCwIcon, AlertCircleIcon } from "lucide-react";
 import FileUploader from "@/aksec/components/file-uploader";
 import FilePreview from "@/aksec/components/file-preview";
 import ProcessingStatus from "@/aksec/components/processing-status";
 import SecurityReport from "@/aksec/components/security-report";
+import { LLMSettings, getLLMConfig, isLLMConfigured } from "@/aksec/components/llm-settings";
 import { KubernetesSecurityAnalysis } from "@/aksec/data/kubernetes-security-analysis";
 
 // API configuration
@@ -18,6 +20,7 @@ export default function Dashboard() {
   const [processingProgress, setProcessingProgress] = useState(0);
   const [processingError, setProcessingError] = useState("");
   const [analysisResult, setAnalysisResult] = useState<KubernetesSecurityAnalysis | null>(null);
+  const [usedProvider, setUsedProvider] = useState<string | null>(null);
 
   const handleFilesSelected = (selectedFiles: File[]) => {
     setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
@@ -32,20 +35,45 @@ export default function Dashboard() {
       return;
     }
 
+    // Check if LLM is configured
+    const llmConfig = getLLMConfig();
+    if (!llmConfig) {
+      setProcessingError("Please configure your API key first. Click the 'Configure API' button above.");
+      setProcessingStatus("error");
+      return;
+    }
+
     // Reset state
     setProcessingError("");
     setActiveTab("processing");
     setProcessingStatus("ingesting");
     setProcessingProgress(10);
+    setUsedProvider(null);
 
     try {
       // Stage 1: Uploading
       setProcessingStatus("ingesting");
       setProcessingProgress(20);
 
-      // Prepare form data with the first file (or modify for multiple)
+      // Prepare form data with the first file and provider config
       const formData = new FormData();
       formData.append("file", files[0]);
+      formData.append("provider", llmConfig.provider);
+      formData.append("api_key", llmConfig.apiKey);
+      
+      // Add provider-specific fields
+      if (llmConfig.endpoint) {
+        formData.append("endpoint", llmConfig.endpoint);
+      }
+      if (llmConfig.deployment) {
+        formData.append("deployment", llmConfig.deployment);
+      }
+      if (llmConfig.model) {
+        formData.append("model", llmConfig.model);
+      }
+      if (llmConfig.apiVersion) {
+        formData.append("api_version", llmConfig.apiVersion);
+      }
 
       // Stage 2: Sending to API
       setProcessingStatus("parsing");
@@ -86,8 +114,9 @@ export default function Dashboard() {
       // Debug: Log the analysis data being stored
       console.log("Analysis Data:", result.data);
       
-      // Store the analysis result
+      // Store the analysis result and provider used
       setAnalysisResult(result.data);
+      setUsedProvider(result.provider);
 
       // Small delay for UX before showing report
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -110,8 +139,11 @@ export default function Dashboard() {
     setProcessingProgress(0);
     setProcessingError("");
     setAnalysisResult(null);
+    setUsedProvider(null);
     setActiveTab("upload");
   };
+
+  const llmConfigured = isLLMConfigured();
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -123,6 +155,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <LLMSettings />
           {processingStatus === "completed" && (
             <Button variant="outline" onClick={handleNewAnalysis}>
               <RefreshCwIcon className="h-4 w-4 mr-2" />
@@ -130,7 +163,7 @@ export default function Dashboard() {
             </Button>
           )}
           <Button
-            disabled={files.length === 0 || activeTab !== "upload"}
+            disabled={files.length === 0 || activeTab !== "upload" || !llmConfigured}
             onClick={handleStartAnalysis}
           >
             <ShieldIcon className="h-4 w-4 mr-2" />
@@ -138,6 +171,30 @@ export default function Dashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Warning banner if LLM not configured */}
+      {!llmConfigured && (
+        <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-center gap-3">
+          <AlertCircleIcon className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+          <div className="flex-1">
+            <p className="font-medium text-yellow-800 dark:text-yellow-200">
+              API Key Required
+            </p>
+            <p className="text-sm text-yellow-700 dark:text-yellow-300">
+              Configure your OpenAI, Claude, Gemini, or Azure OpenAI API key to start analyzing diagrams.
+            </p>
+          </div>
+          <LLMSettings />
+        </div>
+      )}
+
+      {/* Provider badge when analysis is complete */}
+      {usedProvider && processingStatus === "completed" && (
+        <div className="mb-4 flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Analyzed using:</span>
+          <Badge variant="secondary">{usedProvider}</Badge>
+        </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 mb-8">
@@ -296,7 +353,7 @@ export default function Dashboard() {
 
                 <Button
                   className="w-full"
-                  disabled={files.length === 0}
+                  disabled={files.length === 0 || !llmConfigured}
                   onClick={handleStartAnalysis}
                 >
                   <ShieldIcon className="h-4 w-4 mr-2" />
