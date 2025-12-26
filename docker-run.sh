@@ -16,7 +16,28 @@ if [ ! -f .env ]; then
     if [ -f .env.example ]; then
         echo -e "${YELLOW}Creating .env file from .env.example...${NC}"
         cp .env.example .env
-        echo -e "${YELLOW}Please update .env with your Azure OpenAI API key${NC}"
+        echo -e "${YELLOW}Please update .env with your LLM provider API key${NC}"
+    else
+        echo -e "${YELLOW}No .env file found. Creating template...${NC}"
+        cat > .env << 'EOF'
+# LLM Provider Configuration
+# Configure ONE of the following providers:
+
+# Option 1: Azure OpenAI
+AZURE_OPENAI_API_KEY=
+AZURE_OPENAI_ENDPOINT=
+AZURE_OPENAI_DEPLOYMENT=
+
+# Option 2: OpenAI
+OPENAI_API_KEY=
+
+# Option 3: Anthropic Claude
+ANTHROPIC_API_KEY=
+
+# Option 4: Google Gemini
+GOOGLE_API_KEY=
+EOF
+        echo -e "${YELLOW}Created .env file. Please add your API key for your preferred LLM provider.${NC}"
     fi
 fi
 
@@ -78,8 +99,13 @@ case "$1" in
         echo "  stop     - Stop all running containers"
         echo "  logs     - View container logs"
         echo ""
-        echo "Environment:"
-        echo "  Copy .env.example to .env and update with your Azure OpenAI credentials"
+        echo "LLM Providers (configure in .env or UI):"
+        echo "  - Azure OpenAI"
+        echo "  - OpenAI"
+        echo "  - Anthropic Claude"
+        echo "  - Google Gemini"
+        echo ""
+        echo "Note: API keys can be configured via .env file or in the UI settings"
         exit 1
         ;;
 esac

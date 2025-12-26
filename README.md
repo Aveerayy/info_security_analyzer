@@ -40,12 +40,11 @@ Open http://localhost:5173
 ### Option 2: Docker
 
 ```bash
-# Set your API key
-export AZURE_OPENAI_API_KEY=your-key-here
-
 # Run with Docker Compose
 ./docker-run.sh full
 ```
+
+On first run, a `.env` file will be created. Configure your preferred LLM provider there or use the UI settings.
 
 ## Usage
 
@@ -84,13 +83,18 @@ export AZURE_OPENAI_API_KEY=your-key-here
 - **Visualization**: D3.js for relationship diagrams
 - **PDF Generation**: jsPDF with autoTable
 
-## Environment Variables
+## LLM Provider Configuration
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `AZURE_OPENAI_API_KEY` | Azure OpenAI API key | For Azure OpenAI |
-| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL | For Azure OpenAI |
-| `AZURE_OPENAI_DEPLOYMENT` | Model deployment name | For Azure OpenAI |
+Configure **one** of the following providers via environment variables or the UI settings:
+
+| Provider | Environment Variables |
+|----------|----------------------|
+| **Azure OpenAI** | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT` |
+| **OpenAI** | `OPENAI_API_KEY` |
+| **Anthropic Claude** | `ANTHROPIC_API_KEY` |
+| **Google Gemini** | `GOOGLE_API_KEY` |
+
+**Note**: API keys can also be configured directly in the UI by clicking the settings button - no environment variables required.
 
 ## License
 
