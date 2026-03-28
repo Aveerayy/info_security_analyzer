@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability privately
+    url: mailto:akshay@veerayyagari.com
+    about: Do not file unpatched vulnerabilities as public issues; use the private path described in SECURITY.md.

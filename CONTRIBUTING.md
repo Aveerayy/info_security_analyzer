@@ -64,6 +64,12 @@ Please:
 - tests for backend parsing and provider validation
 - privacy and deployment documentation
 
+For maintainers and new contributors, see also:
+
+- `docs/good-first-issues.md` for starter-task guidance and labeling ideas
+- `.github/ISSUE_TEMPLATE/` for intake hygiene
+- `docs/RELEASING.md` and `CHANGELOG.md` for release-note expectations
+
 ## Code of conduct
 
 Be constructive, kind, and specific. No security shaming.
