@@ -6,10 +6,10 @@ WORKDIR /app
 ARG VITE_API_URL=http://localhost:8000
 ENV VITE_API_URL=$VITE_API_URL
 
-# Copy package metadata and install dependencies.
-# Use npm install so the image still builds when package-lock.json is not present.
+# Copy package metadata and install dependencies reproducibly.
+# package-lock.json is committed, so prefer npm ci for deterministic builds.
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 # Copy the rest of the application code
 COPY . .
