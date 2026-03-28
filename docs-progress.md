@@ -7,6 +7,8 @@
 - Added `SECURITY.md`
 - Added `CONTRIBUTING.md`
 - Drafted a stronger README focused on trust, quickstart, and positioning
+- Added a built-in demo report path in the UI for screenshot capture without API keys
+- Added demo asset docs and an SVG placeholder under `docs/assets/`
 
 ## Next
 

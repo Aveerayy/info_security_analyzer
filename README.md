@@ -4,6 +4,8 @@ Analyze architecture diagrams with AI-assisted STRIDE threat modeling.
 
 Info Security Analyzer helps security engineers, architects, and developers turn uploaded diagrams into structured threat-model findings, risk summaries, and exportable reports.
 
+![Demo report placeholder](docs/assets/demo-report-placeholder.svg)
+
 ## Why this exists
 
 Threat modeling is useful but often skipped because it is slow, inconsistent, or hard to start. This project aims to lower the friction:
@@ -22,6 +24,7 @@ This is an assistive tool, **not** a certification or guarantee of completeness.
 - **Multi-LLM support** for Azure OpenAI, OpenAI, Anthropic, and Google Gemini
 - **Interactive report output** with risk breakdowns and relationship views
 - **PDF export** for sharing and documentation
+- **Built-in demo report mode** for local screenshots and product walkthroughs without API keys
 
 ## Quick start
 
@@ -50,6 +53,8 @@ npm run dev
 
 Open `http://localhost:5173`
 
+Tip: click **Load Demo Report** to explore the UI and capture screenshots without configuring any provider.
+
 ### Option 2: Docker
 
 ```bash
@@ -60,6 +65,18 @@ On first run, a `.env` file will be created if needed. You can configure provide
 
 - in `.env` for self-hosted use, or
 - in the UI settings for local evaluation
+
+## Demo mode for screenshots and walkthroughs
+
+If you just want to preview the product or capture demo assets:
+
+1. Run `npm install`
+2. Run `npm run dev`
+3. Open `http://localhost:5173`
+4. Click **Load Demo Report**
+5. Capture screenshots locally
+
+See `docs/demo-assets.md` for the recommended capture flow and placeholder asset.
 
 ## How it works
 

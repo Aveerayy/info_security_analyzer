@@ -8,7 +8,7 @@ import FilePreview from "@/aksec/components/file-preview";
 import ProcessingStatus from "@/aksec/components/processing-status";
 import SecurityReport from "@/aksec/components/security-report";
 import { LLMSettings, getLLMConfig, isLLMConfigured } from "@/aksec/components/llm-settings";
-import { KubernetesSecurityAnalysis } from "@/aksec/data/kubernetes-security-analysis";
+import { KUBERNETES_SECURITY_ANALYSIS, KubernetesSecurityAnalysis } from "@/aksec/data/kubernetes-security-analysis";
 
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -133,6 +133,16 @@ export default function Dashboard() {
     }
   };
 
+  const handleLoadDemoReport = () => {
+    setFiles([]);
+    setProcessingError("");
+    setProcessingProgress(100);
+    setProcessingStatus("completed");
+    setAnalysisResult(KUBERNETES_SECURITY_ANALYSIS);
+    setUsedProvider("Built-in demo dataset");
+    setActiveTab("report");
+  };
+
   const handleNewAnalysis = () => {
     setFiles([]);
     setProcessingStatus("idle");
@@ -154,8 +164,12 @@ export default function Dashboard() {
             Upload architecture diagrams for STRIDE threat analysis
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <LLMSettings />
+          <Button variant="outline" onClick={handleLoadDemoReport}>
+            <ShieldIcon className="h-4 w-4 mr-2" />
+            Load Demo Report
+          </Button>
           {processingStatus === "completed" && (
             <Button variant="outline" onClick={handleNewAnalysis}>
               <RefreshCwIcon className="h-4 w-4 mr-2" />
@@ -169,6 +183,18 @@ export default function Dashboard() {
             <ShieldIcon className="h-4 w-4 mr-2" />
             Start Security Analysis
           </Button>
+        </div>
+      </div>
+
+      <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-center gap-3">
+        <ShieldIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+        <div className="flex-1">
+          <p className="font-medium text-blue-800 dark:text-blue-200">
+            Demo mode available
+          </p>
+          <p className="text-sm text-blue-700 dark:text-blue-300">
+            Use <span className="font-medium">Load Demo Report</span> to preview the full report UI and capture screenshots locally without API keys or backend setup.
+          </p>
         </div>
       </div>
 
@@ -351,14 +377,24 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <Button
-                  className="w-full"
-                  disabled={files.length === 0 || !llmConfigured}
-                  onClick={handleStartAnalysis}
-                >
-                  <ShieldIcon className="h-4 w-4 mr-2" />
-                  Start Security Analysis
-                </Button>
+                <div className="space-y-2">
+                  <Button
+                    className="w-full"
+                    disabled={files.length === 0 || !llmConfigured}
+                    onClick={handleStartAnalysis}
+                  >
+                    <ShieldIcon className="h-4 w-4 mr-2" />
+                    Start Security Analysis
+                  </Button>
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={handleLoadDemoReport}
+                  >
+                    <ShieldIcon className="h-4 w-4 mr-2" />
+                    Load Demo Report Instead
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -385,12 +421,7 @@ export default function Dashboard() {
         </TabsContent>
 
         <TabsContent value="report">
-          {analysisResult && (
-            <SecurityReport
-              report={analysisResult}
-              componentSecurityPosture={analysisResult}
-            />
-          )}
+          {analysisResult && <SecurityReport report={analysisResult} />}
         </TabsContent>
       </Tabs>
     </div>
