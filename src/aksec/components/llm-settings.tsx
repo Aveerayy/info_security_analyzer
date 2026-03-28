@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -66,28 +66,18 @@ const PROVIDERS = [
   },
 ];
 
-const LOCAL_STORAGE_KEY = "info_security_analyzer_llm_config";
+let activeLLMConfig: LLMConfig | null = null;
 
 export function LLMSettings() {
   const [open, setOpen] = useState(false);
-  const [config, setConfig] = useState<LLMConfig>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch {
-          // Invalid JSON, use default
-        }
-      }
-    }
-    return { provider: "openai", apiKey: "" };
-  });
+  const [config, setConfig] = useState<LLMConfig>(
+    activeLLMConfig ?? { provider: "openai", apiKey: "", model: "gpt-4o" }
+  );
 
   const selectedProvider = PROVIDERS.find((p) => p.id === config.provider);
 
   const handleSave = () => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(config));
+    activeLLMConfig = { ...config };
     setOpen(false);
   };
 
@@ -99,6 +89,7 @@ export function LLMSettings() {
       model: provider?.defaultModel,
       endpoint: undefined,
       deployment: undefined,
+      apiVersion: undefined,
     });
   };
 
@@ -110,17 +101,17 @@ export function LLMSettings() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
-          {isConfigured ? (
+          {isLLMConfigured() ? (
             <CheckCircleIcon className="h-4 w-4 text-green-500" />
           ) : (
             <KeyIcon className="h-4 w-4" />
           )}
           <span className="hidden sm:inline">
-            {isConfigured ? selectedProvider?.name : "Configure API"}
+            {isLLMConfigured() ? activeLLMConfig?.provider?.replace("_", " ") : "Configure API"}
           </span>
-          {isConfigured && (
+          {isLLMConfigured() && selectedProvider && (
             <Badge variant="secondary" className="ml-1 text-xs">
-              {selectedProvider?.icon}
+              {selectedProvider.icon}
             </Badge>
           )}
         </Button>
@@ -133,18 +124,14 @@ export function LLMSettings() {
           </DialogTitle>
           <DialogDescription>
             Configure your preferred AI provider for security analysis.
-            Your API key is stored locally in your browser and never sent to our servers.
+            API keys are kept in memory for the current tab session only and are cleared on refresh or close.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Provider Selection */}
           <div className="space-y-2">
             <Label>Provider</Label>
-            <Select
-              value={config.provider}
-              onValueChange={handleProviderChange}
-            >
+            <Select value={config.provider} onValueChange={handleProviderChange}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -166,7 +153,6 @@ export function LLMSettings() {
             </Select>
           </div>
 
-          {/* API Key */}
           <div className="space-y-2">
             <Label>API Key *</Label>
             <Input
@@ -183,7 +169,6 @@ export function LLMSettings() {
             </p>
           </div>
 
-          {/* Azure-specific fields */}
           {config.provider === "azure_openai" && (
             <>
               <div className="space-y-2">
@@ -215,7 +200,6 @@ export function LLMSettings() {
             </>
           )}
 
-          {/* Model selection for providers with multiple models */}
           {selectedProvider?.models && (
             <div className="space-y-2">
               <Label>Model</Label>
@@ -239,7 +223,6 @@ export function LLMSettings() {
             </div>
           )}
 
-          {/* Warning if config incomplete */}
           {config.apiKey && !isAzureComplete && (
             <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-md text-yellow-700 dark:text-yellow-300 text-sm">
               <AlertCircleIcon className="h-4 w-4" />
@@ -253,8 +236,8 @@ export function LLMSettings() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              localStorage.removeItem(LOCAL_STORAGE_KEY);
-              setConfig({ provider: "openai", apiKey: "" });
+              activeLLMConfig = null;
+              setConfig({ provider: "openai", apiKey: "", model: "gpt-4o" });
             }}
           >
             Clear Settings
@@ -263,10 +246,7 @@ export function LLMSettings() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleSave} 
-              disabled={!config.apiKey || !isAzureComplete}
-            >
+            <Button onClick={handleSave} disabled={!config.apiKey || !isAzureComplete}>
               Save Settings
             </Button>
           </div>
@@ -276,35 +256,17 @@ export function LLMSettings() {
   );
 }
 
-/**
- * Get the current LLM configuration from localStorage
- * @returns LLMConfig or null if not configured
- */
 export function getLLMConfig(): LLMConfig | null {
-  if (typeof window === "undefined") return null;
-  
-  const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (!saved) return null;
-  
-  try {
-    const config = JSON.parse(saved) as LLMConfig;
-    return config.apiKey ? config : null;
-  } catch {
-    return null;
-  }
+  return activeLLMConfig && activeLLMConfig.apiKey ? activeLLMConfig : null;
 }
 
-/**
- * Check if LLM is configured
- */
 export function isLLMConfigured(): boolean {
   const config = getLLMConfig();
   if (!config) return false;
-  
+
   if (config.provider === "azure_openai") {
     return !!(config.apiKey && config.endpoint && config.deployment);
   }
-  
+
   return !!config.apiKey;
 }
-

@@ -19,10 +19,10 @@ At the moment, security fixes are made on the `main` branch.
 
 Please report suspected vulnerabilities privately. Do **not** open a public GitHub issue for unpatched security problems.
 
-Until a dedicated disclosure channel is added, use one of these safer options:
+Please use one of these private reporting paths:
 
+- email: `akshay@veerayyagari.com`
 - GitHub private security advisory, if enabled for the repository
-- a private maintainer contact method listed on the repo profile
 
 When reporting, include:
 

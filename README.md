@@ -75,7 +75,7 @@ Before using this on sensitive material, understand the basic trust boundaries:
 
 - uploaded diagrams/PDFs are processed by the backend
 - analysis content may be sent to the configured LLM provider
-- API keys entered in the UI are currently stored in the browser's local storage on that device
+- API keys entered in the UI are kept in memory for the current browser tab session and are cleared on refresh/close
 - self-hosted users can instead provide provider credentials through environment variables
 - generated findings can be helpful, but they still require human validation
 

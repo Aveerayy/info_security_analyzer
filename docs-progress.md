@@ -17,7 +17,7 @@
 
 ## Risks / observations
 
-- UI stores provider API keys in browser local storage
+- UI API key persistence was removed; keys are now kept only in memory for the current tab session
 - backend source currently contains Azure default endpoint placeholders and legacy fallback behavior worth reviewing
 - public trust surface is weaker than the product surface right now
 
