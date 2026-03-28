@@ -46,6 +46,7 @@ Please:
 - update docs when behavior changes
 - avoid committing secrets, API keys, or `.env` files
 - describe any security/privacy implications in the PR
+- run `./scripts/smoke-test.sh` from the repo root when possible
 - include screenshots for visible UI changes when practical
 
 ## Pull request checklist

@@ -150,6 +150,7 @@ See also: `SECURITY.md`
 Contributions are welcome.
 
 - See `CONTRIBUTING.md` for setup and PR expectations
+- Run `./scripts/smoke-test.sh` before opening a PR to verify the main local path (frontend build, lint, backend import, health endpoint, and expected no-provider API error)
 - Please report security issues privately as described in `SECURITY.md`
 
 ## License
