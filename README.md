@@ -1,100 +1,125 @@
 # Info Security Analyzer
 
-AI-powered security threat analysis tool that performs STRIDE-based threat modeling on architecture diagrams.
+Analyze architecture diagrams with AI-assisted STRIDE threat modeling.
+
+Info Security Analyzer helps security engineers, architects, and developers turn uploaded diagrams into structured threat-model findings, risk summaries, and exportable reports.
+
+## Why this exists
+
+Threat modeling is useful but often skipped because it is slow, inconsistent, or hard to start. This project aims to lower the friction:
+
+- upload a diagram or PDF
+- identify components and data flows
+- generate STRIDE-oriented findings
+- review recommendations and export a report
+
+This is an assistive tool, **not** a certification or guarantee of completeness. Human review is still required.
 
 ## Features
 
-- **Diagram Analysis**: Upload architecture diagrams (PNG, JPG, PDF) for automated security analysis
-- **STRIDE Threat Modeling**: Identifies Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, and Elevation of Privilege threats
-- **Multi-LLM Support**: Works with Azure OpenAI, OpenAI, Anthropic Claude, or Google Gemini
-- **Interactive Reports**: Visual component relationship diagrams and detailed risk breakdowns
-- **PDF Export**: Generate comprehensive 5-7 page security assessment reports
+- **Diagram and document analysis** for PNG, JPG, and PDF inputs
+- **STRIDE threat modeling** across components and data flows
+- **Multi-LLM support** for Azure OpenAI, OpenAI, Anthropic, and Google Gemini
+- **Interactive report output** with risk breakdowns and relationship views
+- **PDF export** for sharing and documentation
 
-## Quick Start
+## Quick start
 
 ### Prerequisites
+
 - Node.js 18+
 - Python 3.10+
-- API key for one of: Azure OpenAI, OpenAI, Anthropic, or Google Gemini
+- One API key for Azure OpenAI, OpenAI, Anthropic, or Google Gemini
 
-### Option 1: Local Development
+### Option 1: local development
 
 ```bash
-# Clone the repository
 git clone https://github.com/Aveerayy/info_security_analyzer.git
 cd info_security_analyzer
 
-# Start backend
+# backend
 cd backend
 pip install -r requirements.txt
-uvicorn main:app --port 8000
+uvicorn main:app --reload --port 8000
 
-# Start frontend (new terminal)
+# frontend (new terminal)
 cd ..
 npm install
 npm run dev
 ```
 
-Open http://localhost:5173
+Open `http://localhost:5173`
 
 ### Option 2: Docker
 
 ```bash
-# Run with Docker Compose
 ./docker-run.sh full
 ```
 
-On first run, a `.env` file will be created. Configure your preferred LLM provider there or use the UI settings.
+On first run, a `.env` file will be created if needed. You can configure provider credentials either:
 
-## Usage
+- in `.env` for self-hosted use, or
+- in the UI settings for local evaluation
 
-1. **Configure LLM**: Click the settings button to select your LLM provider and enter your API key
-2. **Upload Diagram**: Drag & drop or browse to upload an architecture diagram
-3. **Analyze**: Click "Start Security Analysis" to begin the assessment
-4. **Review Results**: Explore the interactive security report with:
-   - Executive summary with risk counts
-   - Component-level STRIDE analysis
-   - Data flow security risks
-   - Actionable recommendations
-5. **Export**: Download a PDF report for documentation
+## How it works
 
-## Project Structure
+1. Configure an LLM provider
+2. Upload an architecture diagram or PDF
+3. Run analysis
+4. Review findings across components, data flows, and summary recommendations
+5. Export the report if needed
 
-```
-├── backend/                 # Python FastAPI backend
-│   ├── main.py             # API endpoints
-│   ├── analyzer.py         # Core analysis logic
-│   ├── llm_providers.py    # Multi-LLM abstraction
-│   └── requirements.txt    # Python dependencies
-├── src/
-│   ├── aksec/              # Main application components
-│   │   ├── components/     # React components
-│   │   ├── pages/          # Page components
-│   │   └── layouts/        # Layout components
-│   └── components/ui/      # shadcn/ui components
-├── docker-compose.yml      # Docker orchestration
-└── package.json            # Node.js dependencies
-```
+## Trust, privacy, and limits
 
-## Tech Stack
+Before using this on sensitive material, understand the basic trust boundaries:
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS, shadcn/ui
-- **Backend**: Python FastAPI, OpenAI SDK
-- **Visualization**: D3.js for relationship diagrams
-- **PDF Generation**: jsPDF with autoTable
+- uploaded diagrams/PDFs are processed by the backend
+- analysis content may be sent to the configured LLM provider
+- API keys entered in the UI are currently stored in the browser's local storage on that device
+- self-hosted users can instead provide provider credentials through environment variables
+- generated findings can be helpful, but they still require human validation
 
-## LLM Provider Configuration
+If you are evaluating the tool for real environments, prefer sanitized diagrams first.
+
+See also: `SECURITY.md`
+
+## LLM provider configuration
 
 Configure **one** of the following providers via environment variables or the UI settings:
 
-| Provider | Environment Variables |
-|----------|----------------------|
-| **Azure OpenAI** | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT` |
-| **OpenAI** | `OPENAI_API_KEY` |
-| **Anthropic Claude** | `ANTHROPIC_API_KEY` |
-| **Google Gemini** | `GOOGLE_API_KEY` |
+| Provider | Environment variables |
+|---|---|
+| Azure OpenAI | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT` |
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| Google Gemini | `GOOGLE_API_KEY` |
 
-**Note**: API keys can also be configured directly in the UI by clicking the settings button - no environment variables required.
+## Project structure
+
+```text
+├── backend/              # FastAPI backend and provider integrations
+├── src/                  # React frontend
+├── docker-compose.yml    # Multi-service local orchestration
+├── Dockerfile            # Production frontend image
+├── Dockerfile.dev        # Development image
+└── README.md
+```
+
+## Recommended next improvements
+
+For stronger adoption and trust, the repo will benefit from:
+
+- a screenshot or short GIF near the top of this README
+- a sample redacted report under `docs/`
+- a verified clean-machine quickstart
+- release notes / changelog hygiene
+
+## Contributing
+
+Contributions are welcome.
+
+- See `CONTRIBUTING.md` for setup and PR expectations
+- Please report security issues privately as described in `SECURITY.md`
 
 ## License
 

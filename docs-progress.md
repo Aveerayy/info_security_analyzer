@@ -1,0 +1,28 @@
+# Progress tracker
+
+## Completed
+
+- Cloned and inspected repository structure
+- Compared repo state against growth/trust goals
+- Added `SECURITY.md`
+- Added `CONTRIBUTING.md`
+- Drafted a stronger README focused on trust, quickstart, and positioning
+
+## Next
+
+- tighten privacy and data-flow language further if maintainers want exact guarantees
+- add screenshot/GIF and a sample report under `docs/`
+- verify Docker quickstart on a clean machine/session
+- add labels / release hygiene / issue templates on GitHub
+
+## Risks / observations
+
+- UI stores provider API keys in browser local storage
+- backend source currently contains Azure default endpoint placeholders and legacy fallback behavior worth reviewing
+- public trust surface is weaker than the product surface right now
+
+## Need from maintainer
+
+- preferred private security contact/disclosure channel
+- whether browser local-storage API key behavior should stay as-is
+- whether there is a sample report or screenshot we can publish
