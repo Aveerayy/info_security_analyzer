@@ -13,8 +13,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from analyzer import SYSTEM_PROMPT, extract_pdf_content, process_image_file, get_file_type
-from llm_providers import get_llm_client, PROVIDER_INFO
+try:
+    from .analyzer import SYSTEM_PROMPT, extract_pdf_content, process_image_file, get_file_type
+    from .llm_providers import get_llm_client, PROVIDER_INFO
+except ImportError:  # pragma: no cover - allows `python backend/main.py` style execution
+    from analyzer import SYSTEM_PROMPT, extract_pdf_content, process_image_file, get_file_type
+    from llm_providers import get_llm_client, PROVIDER_INFO
 
 logger = logging.getLogger(__name__)
 

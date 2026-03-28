@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend build and lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Build frontend
+        run: npm run build
+
+  backend:
+    name: Backend validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Compile backend sources
+        run: python -m compileall backend
+
+      - name: Smoke test FastAPI app import and routes
+        run: |
+          python - <<'PY'
+          from backend.main import app
+
+          expected_routes = {
+              '/',
+              '/health',
+              '/api/providers',
+              '/api/analyze',
+              '/api/analyze-multiple',
+          }
+          actual_routes = {route.path for route in app.routes}
+          missing_routes = expected_routes - actual_routes
+
+          if missing_routes:
+              raise SystemExit(f'Missing expected routes: {sorted(missing_routes)}')
+
+          print('Validated routes:', sorted(actual_routes))
+          PY
