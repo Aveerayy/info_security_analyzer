@@ -4,8 +4,6 @@ Analyze architecture diagrams with AI-assisted STRIDE threat modeling.
 
 Info Security Analyzer helps security engineers, architects, and developers turn uploaded diagrams into structured threat-model findings, risk summaries, and exportable reports.
 
-![Demo report placeholder](docs/assets/demo-report-placeholder.svg)
-
 ## Why this exists
 
 Threat modeling is useful but often skipped because it is slow, inconsistent, or hard to start. This project aims to lower the friction:
@@ -24,15 +22,16 @@ This is an assistive tool, **not** a certification or guarantee of completeness.
 - **Multi-LLM support** for Azure OpenAI, OpenAI, Anthropic, and Google Gemini
 - **Interactive report output** with risk breakdowns and relationship views
 - **PDF export** for sharing and documentation
-- **Built-in demo report mode** for local screenshots and product walkthroughs without API keys
+- **Built-in demo report** so you can preview the UI without API keys
 
-## Quick start
-
-### Prerequisites
+## Prerequisites
 
 - Node.js 18+
 - Python 3.10+
-- One API key for Azure OpenAI, OpenAI, Anthropic, or Google Gemini
+- Docker Desktop or Docker Engine + Docker Compose (for containerized runs)
+- One API key for Azure OpenAI, OpenAI, Anthropic, or Google Gemini if you want live analysis
+
+## Quick start
 
 ### Option 1: local development
 
@@ -40,43 +39,76 @@ This is an assistive tool, **not** a certification or guarantee of completeness.
 git clone https://github.com/Aveerayy/info_security_analyzer.git
 cd info_security_analyzer
 
-# backend
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
+# Backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-# frontend (new terminal)
-cd ..
+In a second terminal:
+
+```bash
+cd info_security_analyzer
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`
+Open:
 
-Tip: click **Load Demo Report** to explore the UI and capture screenshots without configuring any provider.
+- Frontend: `http://localhost:5173`
+- Backend health: `http://localhost:8000/health`
 
-### Option 2: Docker
+Notes:
+
+- You can click **Load Demo Report** immediately to validate the UI without backend credentials.
+- For live analysis, configure a provider in the UI or set environment variables before starting the backend.
+
+### Option 2: Docker quickstart
 
 ```bash
+cp .env.example .env
+# edit .env only if you want server-side provider defaults
 ./docker-run.sh full
 ```
 
-On first run, a `.env` file will be created if needed. You can configure provider credentials either:
+This starts:
 
-- in `.env` for self-hosted use, or
-- in the UI settings for local evaluation
+- Backend: `http://localhost:8000`
+- Frontend: `http://localhost:5173`
 
-## Demo mode for screenshots and walkthroughs
+On first run, the script can still create `.env` from `.env.example` if needed, but copying and reviewing it yourself is clearer for deployments.
 
-If you just want to preview the product or capture demo assets:
+### Option 3: Docker Compose directly
 
-1. Run `npm install`
-2. Run `npm run dev`
-3. Open `http://localhost:5173`
-4. Click **Load Demo Report**
-5. Capture screenshots locally
+```bash
+docker compose up --build backend frontend-dev
+```
 
-See `docs/demo-assets.md` for the recommended capture flow and placeholder asset.
+If you want a production-style frontend image instead:
+
+```bash
+docker compose up --build backend frontend-prod
+```
+
+The production frontend is served on `http://localhost`.
+
+## Environment configuration
+
+A sample environment file is included as `.env.example`.
+
+Configure **one** of the following providers via environment variables or the UI settings:
+
+| Provider | Environment variables |
+|---|---|
+| Azure OpenAI | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT`, optionally `AZURE_OPENAI_API_VERSION` |
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| Google Gemini | `GOOGLE_API_KEY` |
+
+### Deployment note
+
+This repository does **not** ship a usable Azure endpoint, deployment, or placeholder key anymore. For self-hosting, set your own environment variables explicitly. For local evaluation, entering credentials in the UI is usually the safest starting point.
 
 ## How it works
 
@@ -92,24 +124,14 @@ Before using this on sensitive material, understand the basic trust boundaries:
 
 - uploaded diagrams/PDFs are processed by the backend
 - analysis content may be sent to the configured LLM provider
-- API keys entered in the UI are kept in memory for the current browser tab session and are cleared on refresh/close
+- API keys entered in the UI are kept only in memory for the current browser tab session and are cleared on refresh/close
 - self-hosted users can instead provide provider credentials through environment variables
+- if no provider is selected, the backend only falls back to Azure OpenAI when a complete Azure environment configuration is present
 - generated findings can be helpful, but they still require human validation
 
 If you are evaluating the tool for real environments, prefer sanitized diagrams first.
 
 See also: `SECURITY.md`
-
-## LLM provider configuration
-
-Configure **one** of the following providers via environment variables or the UI settings:
-
-| Provider | Environment variables |
-|---|---|
-| Azure OpenAI | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT` |
-| OpenAI | `OPENAI_API_KEY` |
-| Anthropic | `ANTHROPIC_API_KEY` |
-| Google Gemini | `GOOGLE_API_KEY` |
 
 ## Project structure
 
@@ -118,18 +140,10 @@ Configure **one** of the following providers via environment variables or the UI
 ├── src/                  # React frontend
 ├── docker-compose.yml    # Multi-service local orchestration
 ├── Dockerfile            # Production frontend image
-├── Dockerfile.dev        # Development image
+├── Dockerfile.dev        # Development frontend image
+├── docker-run.sh         # Convenience wrapper for compose workflows
 └── README.md
 ```
-
-## Recommended next improvements
-
-For stronger adoption and trust, the repo will benefit from:
-
-- a screenshot or short GIF near the top of this README
-- a sample redacted report under `docs/`
-- a verified clean-machine quickstart
-- release notes / changelog hygiene
 
 ## Contributing
 

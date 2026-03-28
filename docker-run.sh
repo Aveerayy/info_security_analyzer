@@ -3,7 +3,7 @@
 # Info Security Analyzer - Docker Run Script
 # Usage: ./docker-run.sh [dev|prod|backend|full]
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -41,31 +41,44 @@ EOF
     fi
 fi
 
-# Load environment variables
-if [ -f .env ]; then
-    export $(cat .env | grep -v '^#' | xargs)
+# Prefer Docker Compose v2 but fall back to docker-compose if needed.
+if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker compose)
+elif command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker-compose)
+else
+    echo -e "${RED}Docker Compose is not installed. Install Docker Desktop or docker-compose first.${NC}"
+    exit 1
 fi
 
-case "$1" in
+# Load environment variables from .env without mangling quoted values.
+if [ -f .env ]; then
+    set -a
+    # shellcheck disable=SC1091
+    . ./.env
+    set +a
+fi
+
+case "${1:-}" in
     dev)
         echo -e "${GREEN}Starting development environment (frontend only)...${NC}"
         echo -e "${YELLOW}Note: Backend must be running separately or use 'full' mode${NC}"
-        docker-compose up dev
+        "${COMPOSE_CMD[@]}" up dev
         ;;
     
     backend)
         echo -e "${GREEN}Starting backend API server...${NC}"
-        docker-compose up backend
+        "${COMPOSE_CMD[@]}" up backend
         ;;
     
     full)
         echo -e "${GREEN}Starting full stack (frontend + backend)...${NC}"
-        docker-compose up backend frontend-dev
+        "${COMPOSE_CMD[@]}" up backend frontend-dev
         ;;
     
     prod)
         echo -e "${GREEN}Starting production environment...${NC}"
-        docker-compose up -d backend frontend-prod
+        "${COMPOSE_CMD[@]}" up -d backend frontend-prod
         echo -e "${GREEN}Application running at:${NC}"
         echo -e "  Frontend: http://localhost:80"
         echo -e "  Backend:  http://localhost:8000"
@@ -73,16 +86,16 @@ case "$1" in
     
     build)
         echo -e "${GREEN}Building all Docker images...${NC}"
-        docker-compose build
+        "${COMPOSE_CMD[@]}" build
         ;;
     
     stop)
         echo -e "${YELLOW}Stopping all containers...${NC}"
-        docker-compose down
+        "${COMPOSE_CMD[@]}" down
         ;;
     
     logs)
-        docker-compose logs -f
+        "${COMPOSE_CMD[@]}" logs -f
         ;;
     
     *)
