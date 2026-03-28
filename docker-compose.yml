@@ -9,11 +9,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      # Azure OpenAI (optional)
+      # Optional Azure OpenAI server-side defaults. Leave blank unless you want
+      # the backend to use your deployment when no provider is selected in the UI.
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
       - AZURE_OPENAI_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT:-}
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
-      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-02-15-preview}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-08-01-preview}
       # OpenAI (optional)
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       # Anthropic (optional)

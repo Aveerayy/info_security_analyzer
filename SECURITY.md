@@ -35,9 +35,9 @@ When reporting, include:
 
 A few important trust boundaries for this project:
 
-- Uploaded diagrams and PDFs are processed by the backend and may be sent to the configured LLM provider for analysis.
-- API keys entered in the UI are stored in the browser's local storage on that device.
-- Environment-variable-based keys may be used on self-hosted deployments instead of browser-stored keys.
+- Uploaded diagrams and PDFs are processed by the backend and may be sent to the configured LLM provider.
+- API keys entered in the UI are stored only in browser memory for the current tab session. They are cleared on refresh or close.
+- Environment-variable-based keys may be used on self-hosted deployments instead of browser-provided keys.
 - Generated analysis should be reviewed by a human before operational or compliance use.
 
 ## Deployment guidance
@@ -48,6 +48,7 @@ If you self-host this project:
 - do not commit `.env` files or API keys
 - prefer least-privilege API keys and isolated test projects during evaluation
 - review logs and defaults before using real sensitive architecture diagrams
+- set provider environment variables explicitly; do not rely on sample values or placeholder deployments
 
 ## Out of scope / known limitations
 

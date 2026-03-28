@@ -1,6 +1,9 @@
 """
 Security Analyzer Module
-Performs STRIDE threat model analysis on architecture diagrams using Azure OpenAI
+Performs STRIDE threat model analysis on architecture diagrams.
+
+Legacy direct Azure OpenAI helpers remain for compatibility, but they now require
+explicit environment configuration rather than insecure placeholder defaults.
 """
 
 import os
@@ -15,11 +18,12 @@ from openai import AzureOpenAI
 import fitz  # PyMuPDF
 from PIL import Image
 
-# Azure OpenAI API configuration
-AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://isec-test.openai.azure.com/")
-AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
-AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "__ADD__KEY_HERE")
-AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2025-01-01-preview")
+# Optional Azure OpenAI API configuration for legacy direct helpers.
+# No hard-coded endpoint, deployment, or placeholder key is shipped.
+AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
+AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
 
 # System prompt for STRIDE analysis
 SYSTEM_PROMPT = """You are a security analyst expert. Analyze the provided architecture diagram or document and perform a comprehensive STRIDE threat model analysis.
@@ -82,7 +86,21 @@ IMPORTANT:
 
 
 def get_azure_client() -> AzureOpenAI:
-    """Initialize and return Azure OpenAI client"""
+    """Initialize and return Azure OpenAI client for legacy direct analysis paths."""
+    missing_fields = []
+    if not AZURE_ENDPOINT:
+        missing_fields.append("AZURE_OPENAI_ENDPOINT")
+    if not AZURE_API_KEY:
+        missing_fields.append("AZURE_OPENAI_API_KEY")
+    if not AZURE_DEPLOYMENT:
+        missing_fields.append("AZURE_OPENAI_DEPLOYMENT")
+
+    if missing_fields:
+        raise ValueError(
+            "Azure OpenAI legacy analyzer is not configured. Missing environment variables: "
+            + ", ".join(missing_fields)
+        )
+
     return AzureOpenAI(
         azure_endpoint=AZURE_ENDPOINT,
         api_key=AZURE_API_KEY,
@@ -96,44 +114,38 @@ def extract_pdf_content(pdf_path: str) -> dict:
         pdf_document = fitz.open(pdf_path)
         extracted_text = ""
         image_data_list = []
-        
+
         for page_num in range(len(pdf_document)):
             page = pdf_document[page_num]
-            
-            # Extract text
+
             page_text = page.get_text()
             if page_text.strip():
                 extracted_text += f"\n\n--- Page {page_num + 1} ---\n\n{page_text}"
-            
-            # Extract images
+
             image_list = page.get_images(full=True)
-            
-            for img_index, img_info in enumerate(image_list):
+
+            for img_info in image_list:
                 xref = img_info[0]
                 base_image = pdf_document.extract_image(xref)
                 image_bytes = base_image["image"]
-                
-                # Convert to PIL Image
+
                 image = Image.open(io.BytesIO(image_bytes))
-                
-                # Save to memory buffer as PNG
+
                 buffer = io.BytesIO()
                 image.save(buffer, format="PNG")
                 buffer.seek(0)
-                
-                # Encode as base64
+
                 encoded_image = base64.b64encode(buffer.read()).decode('ascii')
                 image_data_list.append(encoded_image)
-        
+
         pdf_document.close()
-        
+
         return {
             "text": extracted_text.strip(),
             "images": image_data_list
         }
-    
-    except Exception as e:
-        print(f"Error extracting content from PDF: {str(e)}")
+
+    except Exception:
         return {"text": "", "images": []}
 
 
@@ -143,72 +155,65 @@ def process_image_file(image_path: str) -> Optional[str]:
         with open(image_path, 'rb') as image_file:
             encoded_image = base64.b64encode(image_file.read()).decode('ascii')
         return encoded_image
-    except Exception as e:
-        print(f"Error processing image file: {str(e)}")
+    except Exception:
         return None
 
 
 def get_file_type(file_path: str) -> str:
     """Determine the file type based on extension and content"""
     mime_type, _ = mimetypes.guess_type(file_path)
-    
+
     if mime_type:
         main_type = mime_type.split('/')[0]
         sub_type = mime_type.split('/')[1]
-        
+
         if main_type == 'image':
             return 'image'
         elif sub_type == 'pdf':
             return 'pdf'
-    
-    # Fallback to extension check
+
     ext = os.path.splitext(file_path)[1].lower()
     if ext in ['.pdf']:
         return 'pdf'
     elif ext in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.webp', '.svg']:
         return 'image'
-    
+
     return 'unknown'
 
 
 def analyze_file(file_path: str) -> dict:
     """
     Analyze a file (image or PDF) and return structured security analysis.
-    
+
     Args:
         file_path: Path to the file to analyze
-        
+
     Returns:
-        Dictionary containing the security analysis results
+        Dictionary containing the analysis results
     """
-    # Validate file exists
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
-    
-    # Determine file type
+
     file_type = get_file_type(file_path)
-    
+
     if file_type == 'unknown':
         raise ValueError(f"Unsupported file type for {file_path}")
-    
-    # Initialize Azure OpenAI client
+
     client = get_azure_client()
-    
-    # Build messages
+
     messages = [
         {
             "role": "system",
             "content": [{"type": "text", "text": SYSTEM_PROMPT}]
         }
     ]
-    
-    # Process based on file type
+
     if file_type == 'image':
         encoded_image = process_image_file(file_path)
-        
+
         if not encoded_image:
             raise ValueError("Failed to process the image file")
-        
+
         messages.append({
             "role": "user",
             "content": [
@@ -224,28 +229,26 @@ def analyze_file(file_path: str) -> dict:
                 }
             ]
         })
-        
+
     elif file_type == 'pdf':
         pdf_content = extract_pdf_content(file_path)
-        
+
         if not pdf_content["text"] and not pdf_content["images"]:
             raise ValueError("Could not extract any usable content from the PDF")
-        
+
         user_content = [
             {
                 "type": "text",
                 "text": "Analyze this document and architecture diagrams for security threats using the STRIDE model. Identify all components, their relationships, and provide a comprehensive security assessment."
             }
         ]
-        
-        # Add extracted text if available
+
         if pdf_content["text"]:
             user_content.append({
                 "type": "text",
                 "text": f"Extracted text from document:\n\n{pdf_content['text']}"
             })
-        
-        # Add extracted images
+
         for img_data in pdf_content["images"]:
             user_content.append({
                 "type": "image_url",
@@ -253,13 +256,12 @@ def analyze_file(file_path: str) -> dict:
                     "url": f"data:image/png;base64,{img_data}"
                 }
             })
-        
+
         messages.append({
             "role": "user",
             "content": user_content
         })
-    
-    # Call Azure OpenAI API
+
     completion = client.chat.completions.create(
         model=AZURE_DEPLOYMENT,
         messages=messages,
@@ -267,25 +269,20 @@ def analyze_file(file_path: str) -> dict:
         temperature=0.7,
         top_p=0.95,
     )
-    
-    # Parse the response
+
     response_text = completion.choices[0].message.content
-    
-    # Try to parse as JSON
+
     try:
-        # Clean up response if it has markdown code blocks
         if response_text.startswith("```"):
-            # Remove markdown code block formatting
             lines = response_text.split("\n")
             if lines[0].startswith("```"):
                 lines = lines[1:]
             if lines[-1].strip() == "```":
                 lines = lines[:-1]
             response_text = "\n".join(lines)
-        
+
         result = json.loads(response_text)
     except json.JSONDecodeError:
-        # If parsing fails, return raw response wrapped in a structure
         result = {
             "components": [],
             "dataFlows": [],
@@ -295,36 +292,32 @@ def analyze_file(file_path: str) -> dict:
             },
             "rawAnalysis": response_text
         }
-    
+
     return result
 
 
 def analyze_file_bytes(file_bytes: bytes, filename: str) -> dict:
     """
     Analyze file from bytes (for API uploads).
-    
+
     Args:
         file_bytes: Raw file bytes
         filename: Original filename (used to determine file type)
-        
+
     Returns:
-        Dictionary containing the security analysis results
+        Dictionary containing the analysis results
     """
     import tempfile
-    
-    # Get file extension
+
     ext = os.path.splitext(filename)[1]
-    
-    # Write to temporary file
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         tmp.write(file_bytes)
         tmp_path = tmp.name
-    
+
     try:
         result = analyze_file(tmp_path)
         return result
     finally:
-        # Clean up temp file
         if os.path.exists(tmp_path):
             os.unlink(tmp_path)
-

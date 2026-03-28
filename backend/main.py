@@ -3,23 +3,30 @@ FastAPI Backend for Info Security Analyzer
 Provides REST API endpoints for security analysis with multi-provider LLM support
 """
 
-import os
-import tempfile
 import json
+import logging
+import os
 from typing import Optional
+
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from analyzer import analyze_file_bytes, SYSTEM_PROMPT, extract_pdf_content, process_image_file, get_file_type
-from llm_providers import get_llm_client, PROVIDER_INFO, LLMProvider
+from analyzer import SYSTEM_PROMPT, extract_pdf_content, process_image_file, get_file_type
+from llm_providers import get_llm_client, PROVIDER_INFO
 
-# Default Azure OpenAI configuration (for backward compatibility)
-AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "https://isec-test.openai.azure.com/")
-AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4.1-mini")
-AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
-AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
+logger = logging.getLogger(__name__)
+
+SUPPORTED_PROVIDERS = set(PROVIDER_INFO.keys())
+DEFAULT_AZURE_API_VERSION = "2024-08-01-preview"
+
+# Optional environment-backed Azure OpenAI configuration.
+# No legacy fallback endpoint/deployment is provided: operators must configure these explicitly.
+AZURE_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
+AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", DEFAULT_AZURE_API_VERSION)
 
 # Create FastAPI app
 app = FastAPI(
@@ -56,6 +63,104 @@ class AnalysisResponse(BaseModel):
     provider: Optional[str] = None
 
 
+def normalize_provider(provider: Optional[str]) -> Optional[str]:
+    if provider is None:
+        return None
+
+    normalized = provider.strip().lower()
+    if not normalized:
+        return None
+
+    if normalized not in SUPPORTED_PROVIDERS:
+        raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
+
+    return normalized
+
+
+def azure_runtime_config_from_request(
+    api_key: Optional[str],
+    endpoint: Optional[str],
+    deployment: Optional[str],
+    api_version: Optional[str],
+) -> dict:
+    config = {
+        "api_key": api_key or AZURE_API_KEY,
+        "endpoint": endpoint or AZURE_ENDPOINT,
+        "deployment": deployment or AZURE_DEPLOYMENT,
+        "api_version": api_version or AZURE_API_VERSION,
+    }
+
+    missing_fields = [
+        field_name
+        for field_name in ("api_key", "endpoint", "deployment")
+        if not config.get(field_name)
+    ]
+    if missing_fields:
+        missing_display = ", ".join(missing_fields)
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Azure OpenAI configuration is incomplete. Missing: "
+                f"{missing_display}. Provide them in the request or set the corresponding "
+                "AZURE_OPENAI_* environment variables."
+            ),
+        )
+
+    return config
+
+
+def build_provider_config(
+    provider: Optional[str],
+    api_key: Optional[str],
+    endpoint: Optional[str],
+    deployment: Optional[str],
+    model: Optional[str],
+    api_version: Optional[str],
+) -> tuple[str, dict]:
+    use_provider = normalize_provider(provider)
+
+    if use_provider is None:
+        if AZURE_API_KEY and AZURE_ENDPOINT and AZURE_DEPLOYMENT:
+            use_provider = "azure_openai"
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "No provider configured. Select a provider in the UI or configure a complete "
+                    "Azure OpenAI environment (AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, "
+                    "AZURE_OPENAI_DEPLOYMENT)."
+                ),
+            )
+
+    if use_provider == "azure_openai":
+        config = azure_runtime_config_from_request(api_key, endpoint, deployment, api_version)
+    elif use_provider == "openai":
+        if not api_key:
+            raise HTTPException(status_code=400, detail="OpenAI API key is required")
+        config = {
+            "api_key": api_key,
+            "model": model or "gpt-4o",
+        }
+    elif use_provider == "anthropic":
+        if not api_key:
+            raise HTTPException(status_code=400, detail="Anthropic API key is required")
+        config = {
+            "api_key": api_key,
+            "model": model or "claude-sonnet-4-20250514",
+        }
+    elif use_provider == "google":
+        if not api_key:
+            raise HTTPException(status_code=400, detail="Google API key is required")
+        config = {
+            "api_key": api_key,
+            "model": model or "gemini-1.5-pro",
+        }
+    else:
+        raise HTTPException(status_code=400, detail=f"Unsupported provider: {use_provider}")
+
+    return use_provider, config
+
+
 @app.get("/", response_model=HealthResponse)
 async def root():
     """Root endpoint - health check"""
@@ -89,64 +194,57 @@ async def get_providers():
 def analyze_with_provider(file_bytes: bytes, filename: str, llm_client) -> dict:
     """
     Analyze file using the provided LLM client.
-    
+
     Args:
         file_bytes: Raw file bytes
         filename: Original filename
         llm_client: Configured LLM client instance
-        
+
     Returns:
         Dictionary containing the security analysis results
     """
     import tempfile
-    import os
-    
-    # Get file extension
+
     ext = os.path.splitext(filename)[1]
-    
-    # Write to temporary file
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         tmp.write(file_bytes)
         tmp_path = tmp.name
-    
+
     try:
         file_type = get_file_type(tmp_path)
-        
+
         if file_type == 'unknown':
             raise ValueError(f"Unsupported file type for {filename}")
-        
-        # Prepare images and prompt
+
         images = []
         user_prompt = "Analyze this architecture diagram for security threats using the STRIDE model. Identify all components, their relationships, and provide a comprehensive security assessment."
-        
+
         if file_type == 'image':
             encoded_image = process_image_file(tmp_path)
             if not encoded_image:
                 raise ValueError("Failed to process the image file")
             images.append(encoded_image)
-            
+
         elif file_type == 'pdf':
             pdf_content = extract_pdf_content(tmp_path)
-            
+
             if not pdf_content["text"] and not pdf_content["images"]:
                 raise ValueError("Could not extract any usable content from the PDF")
-            
+
             if pdf_content["text"]:
                 user_prompt += f"\n\nExtracted text from document:\n\n{pdf_content['text']}"
-            
+
             images.extend(pdf_content["images"])
-        
-        # Call LLM
+
         response_text = llm_client.analyze_with_image(
             system_prompt=SYSTEM_PROMPT,
             user_prompt=user_prompt,
             images=images,
             max_tokens=4000
         )
-        
-        # Parse the response
+
         try:
-            # Clean up response if it has markdown code blocks
             if response_text.startswith("```"):
                 lines = response_text.split("\n")
                 if lines[0].startswith("```"):
@@ -154,10 +252,9 @@ def analyze_with_provider(file_bytes: bytes, filename: str, llm_client) -> dict:
                 if lines[-1].strip() == "```":
                     lines = lines[:-1]
                 response_text = "\n".join(lines)
-            
+
             result = json.loads(response_text)
         except json.JSONDecodeError:
-            # If parsing fails, return raw response wrapped in a structure
             result = {
                 "components": [],
                 "dataFlows": [],
@@ -167,11 +264,10 @@ def analyze_with_provider(file_bytes: bytes, filename: str, llm_client) -> dict:
                 },
                 "rawAnalysis": response_text
             }
-        
+
         return result
-        
+
     finally:
-        # Clean up temp file
         if os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
@@ -188,109 +284,52 @@ async def analyze_diagram(
 ):
     """
     Analyze an uploaded architecture diagram or document.
-    
+
     Accepts:
     - Images: PNG, JPG, JPEG, GIF, BMP, TIFF, WEBP, SVG
     - Documents: PDF
-    
+
     Provider options:
     - openai: Requires api_key, optional model (default: gpt-4o)
     - azure_openai: Requires api_key, endpoint, deployment
     - anthropic: Requires api_key, optional model (default: claude-sonnet-4-20250514)
     - google: Requires api_key, optional model (default: gemini-1.5-pro)
-    
-    If no provider is specified, uses Azure OpenAI with environment variables.
-    
+
+    If no provider is specified, the backend only falls back to Azure OpenAI when a complete
+    Azure environment configuration is present.
+
     Returns:
     - Structured STRIDE threat model analysis
     """
-    # Validate file type
     allowed_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.webp', '.svg', '.pdf'}
     file_ext = os.path.splitext(file.filename)[1].lower() if file.filename else ''
-    
+
     if file_ext not in allowed_extensions:
         raise HTTPException(
             status_code=400,
             detail=f"Unsupported file type: {file_ext}. Allowed types: {', '.join(allowed_extensions)}"
         )
-    
+
     try:
-        # Read file content
         file_content = await file.read()
-        
+
         if len(file_content) == 0:
             raise HTTPException(status_code=400, detail="Empty file uploaded")
-        
-        # Determine provider and build config
-        use_provider = provider or "azure_openai"
-        
-        # Debug logging
-        print(f"[DEBUG] Provider: {use_provider}")
-        print(f"[DEBUG] API Key provided: {'Yes' if api_key else 'No'}")
-        print(f"[DEBUG] Endpoint: {endpoint}")
-        print(f"[DEBUG] Deployment: {deployment}")
-        print(f"[DEBUG] Model: {model}")
-        
-        # Build provider config
-        config = {}
-        
-        if use_provider == "azure_openai":
-            final_endpoint = endpoint or AZURE_ENDPOINT
-            final_deployment = deployment or AZURE_DEPLOYMENT
-            final_api_key = api_key or AZURE_API_KEY
-            final_api_version = api_version or AZURE_API_VERSION
-            
-            print(f"[DEBUG] Azure Config - Endpoint: {final_endpoint}")
-            print(f"[DEBUG] Azure Config - Deployment: {final_deployment}")
-            print(f"[DEBUG] Azure Config - API Version: {final_api_version}")
-            
-            config = {
-                "api_key": final_api_key,
-                "endpoint": final_endpoint,
-                "deployment": final_deployment,
-                "api_version": final_api_version,
-            }
-            if not config["api_key"]:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Azure OpenAI API key is required. Either provide it in the request or set AZURE_OPENAI_API_KEY environment variable."
-                )
-            if not config["deployment"]:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Azure OpenAI deployment name is required. Please provide the deployment name configured in your Azure OpenAI resource."
-                )
-                
-        elif use_provider == "openai":
-            if not api_key:
-                raise HTTPException(status_code=400, detail="OpenAI API key is required")
-            config = {
-                "api_key": api_key,
-                "model": model or "gpt-4o",
-            }
-            
-        elif use_provider == "anthropic":
-            if not api_key:
-                raise HTTPException(status_code=400, detail="Anthropic API key is required")
-            config = {
-                "api_key": api_key,
-                "model": model or "claude-sonnet-4-20250514",
-            }
-            
-        elif use_provider == "google":
-            if not api_key:
-                raise HTTPException(status_code=400, detail="Google API key is required")
-            config = {
-                "api_key": api_key,
-                "model": model or "gemini-1.5-pro",
-            }
-        else:
-            raise HTTPException(status_code=400, detail=f"Unsupported provider: {use_provider}")
-        
-        # Get LLM client and perform analysis
+
+        use_provider, config = build_provider_config(
+            provider=provider,
+            api_key=api_key,
+            endpoint=endpoint,
+            deployment=deployment,
+            model=model,
+            api_version=api_version,
+        )
+
+        logger.info("Starting analysis", extra={"provider": use_provider, "filename": file.filename})
+
         llm_client = get_llm_client(use_provider, config)
         result = analyze_with_provider(file_content, file.filename, llm_client)
-        
+
         return JSONResponse(
             status_code=200,
             content={
@@ -300,17 +339,18 @@ async def analyze_diagram(
                 "provider": llm_client.provider_name
             }
         )
-        
+
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        # Log the error for debugging
-        print(f"Analysis error: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Analysis failed", extra={"filename": file.filename})
         raise HTTPException(
             status_code=500,
-            detail=f"Analysis failed: {str(e)}"
+            detail="Analysis failed due to an internal server error. Check backend logs for details."
         )
 
 
@@ -322,6 +362,7 @@ async def analyze_multiple_diagrams(
     endpoint: Optional[str] = Form(None),
     deployment: Optional[str] = Form(None),
     model: Optional[str] = Form(None),
+    api_version: Optional[str] = Form(None),
 ):
     """
     Analyze multiple uploaded files.
@@ -329,32 +370,24 @@ async def analyze_multiple_diagrams(
     """
     if not files:
         raise HTTPException(status_code=400, detail="No files uploaded")
-    
-    # Build provider config (same as single file endpoint)
-    use_provider = provider or "azure_openai"
-    config = {}
-    
-    if use_provider == "azure_openai":
-        config = {
-            "api_key": api_key or AZURE_API_KEY,
-            "endpoint": endpoint or AZURE_ENDPOINT,
-            "deployment": deployment or AZURE_DEPLOYMENT,
-        }
-    elif use_provider == "openai":
-        config = {"api_key": api_key, "model": model or "gpt-4o"}
-    elif use_provider == "anthropic":
-        config = {"api_key": api_key, "model": model or "claude-sonnet-4-20250514"}
-    elif use_provider == "google":
-        config = {"api_key": api_key, "model": model or "gemini-1.5-pro"}
-    
+
+    use_provider, config = build_provider_config(
+        provider=provider,
+        api_key=api_key,
+        endpoint=endpoint,
+        deployment=deployment,
+        model=model,
+        api_version=api_version,
+    )
+
     try:
         llm_client = get_llm_client(use_provider, config)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
     results = []
     errors = []
-    
+
     for file in files:
         try:
             file_content = await file.read()
@@ -364,11 +397,12 @@ async def analyze_multiple_diagrams(
                 "analysis": result
             })
         except Exception as e:
+            logger.warning("Multi-file analysis item failed", extra={"filename": file.filename, "provider": use_provider})
             errors.append({
                 "filename": file.filename,
                 "error": str(e)
             })
-    
+
     return JSONResponse(
         status_code=200,
         content={

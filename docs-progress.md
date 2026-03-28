@@ -7,6 +7,9 @@
 - Added `SECURITY.md`
 - Added `CONTRIBUTING.md`
 - Drafted a stronger README focused on trust, quickstart, and positioning
+- Removed legacy Azure fallback defaults from backend code paths
+- Tightened provider-selection behavior so the backend only auto-falls back when Azure is fully configured
+- Reduced secret/config logging and clarified deployment setup with `.env.example`
 - Added a built-in demo report path in the UI for screenshot capture without API keys
 - Added demo asset docs and an SVG placeholder under `docs/assets/`
 

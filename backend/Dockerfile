@@ -22,11 +22,11 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
-# Environment variables (can be overridden)
+# Optional Azure OpenAI environment variables (can be overridden)
 ENV AZURE_OPENAI_ENDPOINT=""
 ENV AZURE_OPENAI_DEPLOYMENT=""
 ENV AZURE_OPENAI_API_KEY=""
-ENV AZURE_OPENAI_API_VERSION="2025-01-01-preview"
+ENV AZURE_OPENAI_API_VERSION="2024-08-01-preview"
 
 # Run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
