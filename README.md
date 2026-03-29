@@ -1,8 +1,30 @@
 # Info Security Analyzer
 
+![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![Security Policy](https://img.shields.io/badge/security-policy-blue.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+
 Analyze architecture diagrams with AI-assisted STRIDE threat modeling.
 
-Info Security Analyzer helps security engineers, architects, and developers turn uploaded diagrams and PDFs into structured STRIDE-oriented findings, risk summaries, and exportable reports. It is designed to speed up first-pass review, not replace human judgment.
+Info Security Analyzer helps security engineers, architects, and developers turn uploaded diagrams and PDFs into structured STRIDE-oriented findings, risk summaries, and exportable reports.
+
+**Best for:** fast first-pass threat modeling, security review prep, and stakeholder-friendly report exports.
+
+**Not for:** replacing human judgment, security sign-off, or guaranteeing completeness.
+
+![Demo report preview](docs/assets/demo-report-placeholder.svg)
+
+## Try it in 2 minutes
+
+If you want to evaluate the project before wiring up LLM credentials:
+
+1. Clone the repo
+2. Run `npm install`
+3. Run `npm run dev`
+4. Open `http://localhost:5173`
+5. Click **Load Demo Report**
+
+That path lets GitHub visitors preview the report UX immediately, without API keys or backend setup.
 
 ## Why this exists
 
@@ -30,6 +52,14 @@ This is an assistive tool, **not** a certification or guarantee of completeness.
 - Python 3.10+
 - Docker Desktop or Docker Engine + Docker Compose (for containerized runs)
 - One API key for Azure OpenAI, OpenAI, Anthropic, or Google Gemini if you want live analysis
+
+## Choose your path
+
+| Goal | Best option |
+|---|---|
+| Preview the UI with no API key | `npm install && npm run dev`, then click **Load Demo Report** |
+| Run the full stack locally for development | Local development setup below |
+| Start with containers | Docker quickstart or Docker Compose |
 
 ## Quick start
 
