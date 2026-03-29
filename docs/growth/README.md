@@ -12,6 +12,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 - [`channel-strategy.md`](./channel-strategy.md) — channel-by-channel goals, audience, posting cadence, and guardrails
 - [`messaging-and-assets.md`](./messaging-and-assets.md) — positioning, proof points, sample copy, and asset checklist
 - [`launch-assets.md`](./launch-assets.md) — copy-paste-ready release notes, social posts, outreach snippets, and reply templates
+- [`publish-this-week-packet.md`](./publish-this-week-packet.md) — final, channel-specific publish packet for GitHub release, Telegram, LinkedIn, X/Bluesky, Hacker News, and Reddit
 
 ## Working principles
 
