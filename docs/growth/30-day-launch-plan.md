@@ -85,6 +85,8 @@ Keep this simple. Useful early signals:
 - demo-report usage or mentions in feedback
 - repeat visitors / return feedback from the same people
 
+For launch week, use [`launch-week-metrics.md`](./launch-week-metrics.md) as the daily operating tracker so channel performance and setup signals are captured in one place before rolling lessons into the broader 30-day plan.
+
 ## Guardrails
 
 - do not promise complete threat coverage

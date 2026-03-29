@@ -11,6 +11,7 @@ By the end of day 7, the project should have:
 - one soft-launch pass to warm channels
 - one public launch on a higher-signal channel
 - a simple system for capturing feedback and turning it into docs or product fixes
+- a lightweight daily metrics tracker for stars, traffic, installs/runs, feedback, and channel performance
 
 ## Priority order
 
