@@ -41,15 +41,17 @@ EOF
     fi
 fi
 
-# Prefer Docker Compose v2 but fall back to docker-compose if needed.
-if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
-    COMPOSE_CMD=(docker compose)
-elif command -v docker-compose >/dev/null 2>&1; then
-    COMPOSE_CMD=(docker-compose)
-else
-    echo -e "${RED}Docker Compose is not installed. Install Docker Desktop or docker-compose first.${NC}"
-    exit 1
-fi
+resolve_compose_cmd() {
+    # Prefer Docker Compose v2 but fall back to docker-compose if needed.
+    if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD=(docker compose)
+    elif command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE_CMD=(docker-compose)
+    else
+        echo -e "${RED}Docker Compose is not installed. Install Docker Desktop or docker-compose first.${NC}"
+        exit 1
+    fi
+}
 
 # Load environment variables from .env without mangling quoted values.
 if [ -f .env ]; then
@@ -61,22 +63,26 @@ fi
 
 case "${1:-}" in
     dev)
+        resolve_compose_cmd
         echo -e "${GREEN}Starting development environment (frontend only)...${NC}"
         echo -e "${YELLOW}Note: Backend must be running separately or use 'full' mode${NC}"
         "${COMPOSE_CMD[@]}" up dev
         ;;
     
     backend)
+        resolve_compose_cmd
         echo -e "${GREEN}Starting backend API server...${NC}"
         "${COMPOSE_CMD[@]}" up backend
         ;;
     
     full)
+        resolve_compose_cmd
         echo -e "${GREEN}Starting full stack (frontend + backend)...${NC}"
         "${COMPOSE_CMD[@]}" up backend frontend-dev
         ;;
     
     prod)
+        resolve_compose_cmd
         echo -e "${GREEN}Starting production environment...${NC}"
         "${COMPOSE_CMD[@]}" up -d backend frontend-prod
         echo -e "${GREEN}Application running at:${NC}"
@@ -85,16 +91,19 @@ case "${1:-}" in
         ;;
     
     build)
+        resolve_compose_cmd
         echo -e "${GREEN}Building all Docker images...${NC}"
         "${COMPOSE_CMD[@]}" build
         ;;
     
     stop)
+        resolve_compose_cmd
         echo -e "${YELLOW}Stopping all containers...${NC}"
         "${COMPOSE_CMD[@]}" down
         ;;
     
     logs)
+        resolve_compose_cmd
         "${COMPOSE_CMD[@]}" logs -f
         ;;
     
