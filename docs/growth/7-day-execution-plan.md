@@ -201,6 +201,7 @@ Only do this if:
 - finalize LinkedIn copy
 - finalize Telegram copy
 - finalize Hacker News first-comment template
+- finalize peer/maintainer outreach templates and one follow-up template
 - create a simple feedback capture section or issue label plan for launch-week feedback
 
 ### Outputs
