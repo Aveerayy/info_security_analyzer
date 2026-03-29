@@ -25,6 +25,9 @@ AZURE_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 AZURE_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
 AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
 
+ALLOWED_IMAGE_FORMATS = {"png", "jpeg", "gif", "bmp", "tiff", "webp", "svg"}
+
+
 # System prompt for STRIDE analysis
 SYSTEM_PROMPT = """You are a security analyst expert. Analyze the provided architecture diagram or document and perform a comprehensive STRIDE threat model analysis.
 
@@ -108,6 +111,44 @@ def get_azure_client() -> AzureOpenAI:
     )
 
 
+def detect_image_format(image_bytes: bytes) -> Optional[str]:
+    """Detect a supported image format from content, not filename alone."""
+    if not image_bytes:
+        return None
+
+    header = image_bytes[:32]
+    stripped = image_bytes.lstrip()
+
+    if header.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if header.startswith(b"\xff\xd8\xff"):
+        return "jpeg"
+    if header.startswith((b"GIF87a", b"GIF89a")):
+        return "gif"
+    if header.startswith(b"BM"):
+        return "bmp"
+    if header.startswith((b"II*\x00", b"MM\x00*")):
+        return "tiff"
+    if header.startswith(b"RIFF") and image_bytes[8:12] == b"WEBP":
+        return "webp"
+    if stripped.startswith(b"<svg") or (stripped.startswith(b"<?xml") and b"<svg" in stripped[:512]):
+        return "svg"
+
+    return None
+
+
+def validate_supported_image_bytes(image_bytes: bytes, source: str = "image") -> str:
+    """Reject disguised or unsupported image content before handing it to image decoders."""
+    detected_format = detect_image_format(image_bytes)
+    if detected_format not in ALLOWED_IMAGE_FORMATS:
+        raise ValueError(
+            f"Unsupported or unrecognized {source} content. Allowed image formats: "
+            f"{', '.join(sorted(ALLOWED_IMAGE_FORMATS))}."
+        )
+
+    return detected_format
+
+
 def extract_pdf_content(pdf_path: str) -> dict:
     """Extract both text and images from a PDF file"""
     try:
@@ -128,6 +169,7 @@ def extract_pdf_content(pdf_path: str) -> dict:
                 xref = img_info[0]
                 base_image = pdf_document.extract_image(xref)
                 image_bytes = base_image["image"]
+                validate_supported_image_bytes(image_bytes, source="embedded PDF image")
 
                 image = Image.open(io.BytesIO(image_bytes))
 
@@ -150,10 +192,13 @@ def extract_pdf_content(pdf_path: str) -> dict:
 
 
 def process_image_file(image_path: str) -> Optional[str]:
-    """Process a regular image file and return base64 encoded string"""
+    """Process a regular image file and return base64 encoded string."""
     try:
         with open(image_path, 'rb') as image_file:
-            encoded_image = base64.b64encode(image_file.read()).decode('ascii')
+            image_bytes = image_file.read()
+
+        validate_supported_image_bytes(image_bytes, source="uploaded image")
+        encoded_image = base64.b64encode(image_bytes).decode('ascii')
         return encoded_image
     except Exception:
         return None

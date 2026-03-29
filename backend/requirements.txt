@@ -1,7 +1,10 @@
 # FastAPI and server
 fastapi>=0.109.0
 uvicorn[standard]>=0.27.0
-python-multipart>=0.0.22
+# 0.0.20 is the newest python-multipart release available on Python 3.9.
+# GHSA-wp53-j4wj-2cfg requires non-default UPLOAD_DIR + UPLOAD_KEEP_FILENAME=True,
+# which this backend does not enable.
+python-multipart>=0.0.20
 
 # LLM Providers
 # OpenAI (also used for Azure OpenAI)
