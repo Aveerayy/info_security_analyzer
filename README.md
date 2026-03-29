@@ -14,6 +14,8 @@ Info Security Analyzer helps security engineers, architects, and developers turn
 
 ![Demo report preview](docs/assets/demo-report-placeholder.svg)
 
+Quick links: [Quick start](#quick-start) · [SECURITY.md](SECURITY.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [Demo assets](docs/demo-assets.md)
+
 ## Try it in 2 minutes
 
 If you want to evaluate the project before wiring up LLM credentials:
