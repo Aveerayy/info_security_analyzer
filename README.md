@@ -2,7 +2,7 @@
 
 Analyze architecture diagrams with AI-assisted STRIDE threat modeling.
 
-Info Security Analyzer helps security engineers, architects, and developers turn uploaded diagrams into structured threat-model findings, risk summaries, and exportable reports.
+Info Security Analyzer helps security engineers, architects, and developers turn uploaded diagrams and PDFs into structured STRIDE-oriented findings, risk summaries, and exportable reports. It is designed to speed up first-pass review, not replace human judgment.
 
 ## Why this exists
 
@@ -158,10 +158,12 @@ Contributions are welcome.
 Repo-local launch planning lives in [`docs/growth/`](./docs/growth/):
 
 - [`30-day-launch-plan.md`](./docs/growth/30-day-launch-plan.md)
+- [`7-day-execution-plan.md`](./docs/growth/7-day-execution-plan.md)
 - [`channel-strategy.md`](./docs/growth/channel-strategy.md)
 - [`messaging-and-assets.md`](./docs/growth/messaging-and-assets.md)
+- [`launch-assets.md`](./docs/growth/launch-assets.md)
 
-These docs are meant to keep positioning, launch execution, and trust messaging consistent as the project grows.
+These docs keep positioning, launch execution, and trust messaging consistent as the project grows. `launch-assets.md` is the copy-paste pack for release notes, social posts, and outreach.
 
 ## License
 

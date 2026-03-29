@@ -11,6 +11,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 - [`30-day-launch-plan.md`](./30-day-launch-plan.md) — weekly campaign plan, execution checklist, and success metrics
 - [`channel-strategy.md`](./channel-strategy.md) — channel-by-channel goals, audience, posting cadence, and guardrails
 - [`messaging-and-assets.md`](./messaging-and-assets.md) — positioning, proof points, sample copy, and asset checklist
+- [`launch-assets.md`](./launch-assets.md) — copy-paste-ready release notes, social posts, outreach snippets, and reply templates
 
 ## Working principles
 
