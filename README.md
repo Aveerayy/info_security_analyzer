@@ -153,6 +153,16 @@ Contributions are welcome.
 - Run `./scripts/smoke-test.sh` before opening a PR to verify the main local path (frontend build, lint, backend import, health endpoint, and expected no-provider API error)
 - Please report security issues privately as described in `SECURITY.md`
 
+## Growth and launch planning
+
+Repo-local launch planning lives in [`docs/growth/`](./docs/growth/):
+
+- [`30-day-launch-plan.md`](./docs/growth/30-day-launch-plan.md)
+- [`channel-strategy.md`](./docs/growth/channel-strategy.md)
+- [`messaging-and-assets.md`](./docs/growth/messaging-and-assets.md)
+
+These docs are meant to keep positioning, launch execution, and trust messaging consistent as the project grows.
+
 ## License
 
 MIT
