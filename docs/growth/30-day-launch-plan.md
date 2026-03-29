@@ -2,6 +2,8 @@
 
 A lightweight launch plan for **Info Security Analyzer** focused on trust, proof, and contributor momentum.
 
+For the concrete launch-week sequence, use [`7-day-execution-plan.md`](./7-day-execution-plan.md) as the operating document. This file stays focused on 30-day pacing; the 7-day plan handles day-by-day execution, owners, inputs, publishing order, and launch gates.
+
 ## Goals
 
 By day 30, aim for:

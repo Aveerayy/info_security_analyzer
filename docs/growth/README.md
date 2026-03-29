@@ -4,6 +4,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 
 ## Files
 
+- [`7-day-execution-plan.md`](./7-day-execution-plan.md) — prioritized next-7-days plan with owners, required inputs, publish sequence, and a minimal launch checklist
 - [`marketing-automation-tooling-research.md`](./marketing-automation-tooling-research.md) — comparison of low-cost tooling, approval-loop designs, risks, and the recommended stack
 - [`30-day-launch-plan.md`](./30-day-launch-plan.md) — weekly campaign plan, execution checklist, and success metrics
 - [`channel-strategy.md`](./channel-strategy.md) — channel-by-channel goals, audience, posting cadence, and guardrails
