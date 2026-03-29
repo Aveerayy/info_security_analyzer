@@ -151,6 +151,7 @@ Contributions are welcome.
 
 - See `CONTRIBUTING.md` for setup and PR expectations
 - Run `./scripts/smoke-test.sh` before opening a PR to verify the main local path (frontend build, lint, backend import, health endpoint, and expected no-provider API error)
+- Run `python -m unittest discover -s tests -p 'test_*.py' -v` for a fast backend CI-smoke check without starting the full local stack
 - Please report security issues privately as described in `SECURITY.md`
 
 ## Growth and launch planning

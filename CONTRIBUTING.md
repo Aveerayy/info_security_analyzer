@@ -47,6 +47,7 @@ Please:
 - avoid committing secrets, API keys, or `.env` files
 - describe any security/privacy implications in the PR
 - run `./scripts/smoke-test.sh` from the repo root when possible
+- run `python -m unittest discover -s tests -p 'test_*.py' -v` for quick backend CI-smoke validation
 - include screenshots for visible UI changes when practical
 
 ## Pull request checklist

@@ -61,23 +61,5 @@ jobs:
       - name: Compile backend sources
         run: python -m compileall backend
 
-      - name: Smoke test FastAPI app import and routes
-        run: |
-          python - <<'PY'
-          from backend.main import app
-
-          expected_routes = {
-              '/',
-              '/health',
-              '/api/providers',
-              '/api/analyze',
-              '/api/analyze-multiple',
-          }
-          actual_routes = {route.path for route in app.routes}
-          missing_routes = expected_routes - actual_routes
-
-          if missing_routes:
-              raise SystemExit(f'Missing expected routes: {sorted(missing_routes)}')
-
-          print('Validated routes:', sorted(actual_routes))
-          PY
+      - name: Run backend CI smoke tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
