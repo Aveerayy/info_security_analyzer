@@ -195,8 +195,28 @@ At the end of each day:
    - queued for later
 4. update launch copy if the real-world objections changed the best framing
 5. post or commit the documentation fix before doing more outreach
+6. record the result in [`launch-week-metrics.md`](./launch-week-metrics.md), especially:
+   - repeated signals
+   - actions taken today
+   - next actions for tomorrow
+   - keep / adjust / pause decisions per channel
 
 This keeps the launch honest and cumulative.
+
+## Signal-to-action defaults
+
+Use these defaults so daily review turns into concrete follow-up instead of vague notes.
+
+| If the signal is... | Treat it as... | Default next action |
+|---|---|---|
+| Same setup confusion appears twice | A docs/onboarding failure, not random user error | Patch README/quickstart before more promotion |
+| Same trust/privacy question appears twice | A trust-boundary clarity gap | Tighten explicit data-flow wording and link it in replies |
+| Traffic rises but stars and comments stay weak | Interest without trust or clarity | Rewrite the opening message and lead screenshot |
+| One channel produces thoughtful replies or install attempts | High-fit channel | Keep posting there and reuse the same proof asset/hook |
+| One channel produces only shallow reactions | Low-fit channel for now | Reduce effort there and focus elsewhere |
+| People like the concept but do not try it | First-value path is still too hard | Shorten the demo path and make the safe try-it-now flow obvious |
+| Feedback says findings feel weak or generic | Positioning may be outrunning output quality | Narrow claims now; collect examples before changing product behavior |
+| Feature requests outnumber actual evaluations | Curiosity is ahead of activation | Do not chase roadmap work during launch week; fix adoption blockers first |
 
 ---
 

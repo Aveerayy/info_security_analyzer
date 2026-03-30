@@ -10,7 +10,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 - [`approval-workflow-assets.md`](./approval-workflow-assets.md) — operator-ready checklists, Telegram approval messages, GitHub write-back templates, and audit record examples for the GitHub -> n8n -> Telegram loop
 - [`posting-signals.md`](./posting-signals.md) — allowlisted repo events and hard blockers for draft-generation triggers
 - [`30-day-launch-plan.md`](./30-day-launch-plan.md) — weekly campaign plan, execution checklist, and success metrics
-- [`launch-week-metrics.md`](./launch-week-metrics.md) — lightweight daily tracker for stars, traffic, installs/runs, feedback, and channel performance during launch week
+- [`launch-week-metrics.md`](./launch-week-metrics.md) — daily launch-week review template with scorecards, signal-to-action defaults, and follow-up planning for stars, traffic, installs/runs, feedback, and channel performance
 - [`channel-strategy.md`](./channel-strategy.md) — channel-by-channel goals, audience, posting cadence, and guardrails
 - [`messaging-and-assets.md`](./messaging-and-assets.md) — positioning, proof points, sample copy, and asset checklist
 - [`launch-assets.md`](./launch-assets.md) — copy-paste-ready release notes, social posts, outreach snippets, and reply templates
