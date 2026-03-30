@@ -188,15 +188,20 @@ Contributions are welcome.
 
 ## Growth and launch planning
 
-Repo-local launch planning lives in [`docs/growth/`](./docs/growth/):
+Repo-local launch planning lives in [`docs/growth/`](./docs/growth/).
+
+**Start here for this week’s launch:** [`launch-operator-packet.md`](./docs/growth/launch-operator-packet.md)
+
+Supporting docs:
 
 - [`30-day-launch-plan.md`](./docs/growth/30-day-launch-plan.md)
 - [`7-day-execution-plan.md`](./docs/growth/7-day-execution-plan.md)
 - [`channel-strategy.md`](./docs/growth/channel-strategy.md)
+- [`channel-execution-sequencing.md`](./docs/growth/channel-execution-sequencing.md)
 - [`messaging-and-assets.md`](./docs/growth/messaging-and-assets.md)
 - [`launch-assets.md`](./docs/growth/launch-assets.md)
 
-These docs keep positioning, launch execution, and trust messaging consistent as the project grows. `launch-assets.md` is the copy-paste pack for release notes, social posts, and outreach.
+The operator packet is the single execution doc for launch week; the supporting docs hold the deeper planning, messaging rationale, and reusable templates behind it.
 
 ## License
 
