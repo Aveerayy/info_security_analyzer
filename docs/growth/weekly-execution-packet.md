@@ -2,6 +2,8 @@
 
 A single operator-ready packet for this week’s launch work.
 
+> Note: `launch-operator-packet.md` is now the canonical launch-week packet. This file remains as supporting material.
+
 Use this as the day-to-day working document. It condenses the repo’s existing launch materials into one practical checklist covering:
 
 - the 7-day plan

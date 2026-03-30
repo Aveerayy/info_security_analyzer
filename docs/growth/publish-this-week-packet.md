@@ -2,6 +2,8 @@
 
 A single, channel-specific launch packet for **Info Security Analyzer**.
 
+> Note: `launch-operator-packet.md` is now the canonical launch-week packet. This file remains as channel-specific supporting material.
+
 Use this when you want to publish this week without reassembling copy from multiple planning docs.
 
 ## Canonical links
