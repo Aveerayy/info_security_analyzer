@@ -1,358 +1,370 @@
-# Approval workflow assets
+# Approval runbook: Telegram approval + manual posting
 
-_Use with the documented **GitHub -> n8n -> Telegram -> human decision** loop for `info_security_analyzer`._
+_Use this for the real operator workflow for `info_security_analyzer`._
 
-This file turns the planning docs into concrete execution assets:
-
-- intake checklist
-- approver checklist
-- Telegram approval message templates
-- Telegram outcome messages
-- GitHub write-back templates
-- audit record template
-
-These assets assume the current recommended operating mode:
+This file is the day-to-day runbook for the current recommended mode:
 
 > **draft automatically, approve explicitly, publish manually first**
 
----
+It replaces the earlier "asset pack" framing with a practical operator checklist for handling inbound approval requests, deciding safely, posting manually, and recording what happened.
 
-## 1) Intake checklist for GitHub -> n8n
+Canonical design references:
 
-Use this before n8n sends any approval request.
-
-### Trigger allowlist
-
-- [ ] Event is one of:
-  - published release
-  - merged PR with `announce`, `share`, or `launch-note`
-  - issue labeled `share` or `launch-note`
-- [ ] Event does **not** include `do-not-amplify`
-- [ ] Event is from the canonical repo, not a fork or untrusted mirror
-
-### Required evidence
-
-- [ ] Event URL is present
-- [ ] Primary repo link is present
-- [ ] Supporting proof links are present
-- [ ] Summary is grounded in release notes / PR description / issue body
-- [ ] Any screenshot or asset reference is current and safe to share
-
-### Claim safety
-
-- [ ] Draft does not invent adoption, security, or performance claims
-- [ ] Draft does not imply certification, audit, or endorsement
-- [ ] Draft does not overstate privacy boundaries
-- [ ] Draft links back to repo docs when mentioning privacy/security behavior
-- [ ] Draft avoids quoting third-party praise unless explicitly verified and approved
-
-### Routing
-
-- [ ] Requested channels are listed explicitly
-- [ ] Approval venue is the private maintainer Telegram chat/group
-- [ ] Draft bundle has a unique request ID
-- [ ] Audit destination is known before the message is sent
-
-If any box fails, stop and route to **revise / maintainer-input required**.
+- [`marketing-automation-provisioning-plan.md`](./marketing-automation-provisioning-plan.md)
+- [`posting-signals.md`](./posting-signals.md)
+- [`publish-this-week-packet.md`](./publish-this-week-packet.md)
+- [`weekly-execution-packet.md`](./weekly-execution-packet.md)
 
 ---
 
-## 2) Approver checklist for Telegram
+## 1) What this runbook is for
 
-Use this checklist before pressing **Approve**.
+Use this runbook when:
 
-### Accuracy
+- n8n sends a Telegram approval request
+- a maintainer needs to decide **Approve / Revise / Reject**
+- an approved draft needs to be posted manually
+- the final post URL needs to be recorded back into the audit trail
 
-- [ ] The event is real and linked
-- [ ] The core claim is supported by the linked proof
-- [ ] The draft explains the change clearly to a human who has not followed the repo closely
-- [ ] Links and filenames look correct
+Use the conservative bias throughout:
 
-### Trust / security
-
-- [ ] No secrets, internal URLs, tokens, or private screenshots are exposed
-- [ ] No claim implies guarantees the project does not make
-- [ ] No wording suggests formal security assurance unless that assurance truly exists
-- [ ] The post stays aligned with repo docs and README positioning
-
-### Channel fit
-
-- [ ] The requested channel(s) make sense for this event
-- [ ] Telegram-first is enough if the signal is still weak or ambiguous
-- [ ] The copy length fits the destination
-- [ ] The CTA is reasonable: try it, star it, read docs, or give feedback
-
-### Decision rule
-
-Approve only if all of the below are true:
-
-- [ ] accurate
-- [ ] safe
-- [ ] worth sharing now
-- [ ] understandable without extra maintainer explanation
-
-Otherwise choose:
-
-- **Revise** for fixable copy/content problems
-- **Reject** when the event should not be promoted at all
+- **No automatic publishing**
+- **No implicit approval**
+- **No publish on timeout**
+- **Any material copy change after approval requires fresh approval**
 
 ---
 
-## 3) Approval decision rubric
+## 2) Roles
 
-### Approve when
+At small-project scale, one person may do all of these, but keep the responsibilities mentally separate.
 
-- the event is allowlisted
-- the proof is strong
-- the claim set is modest and defensible
-- the draft is channel-appropriate
-- the asset is current and non-sensitive
+### Drafting system
 
-### Revise when
+- receives GitHub events
+- assembles the draft bundle
+- sends Telegram approval request
+- records workflow state
 
-- the event is worth sharing but the copy is weak
-- the target channels are too broad
-- a screenshot is outdated or unclear
-- the CTA is wrong
-- the wording is technically true but too hype-y
+### Approver
 
-### Reject when
+- checks whether the draft is accurate, safe, and worth sharing now
+- chooses **Approve**, **Revise**, or **Reject**
+- does **not** assume the system already validated every claim
 
-- the event is not worth promoting
-- the draft depends on unsupported claims
-- the material is stale, unsafe, or private
-- the change is too internal, noisy, or low-signal
-- the workflow hit a hard blocker from `posting-signals.md`
+### Publisher
+
+- manually posts the approved copy to the destination channel
+- does not freestyle major wording changes after approval
+- records the final URL(s)
+
+### Operator / maintainer
+
+- handles exceptions, timeouts, broken assets, and audit cleanup
+- can stop the workflow if something looks wrong
 
 ---
 
-## 4) Telegram approval request template
+## 3) Allowed operating mode
 
-Use this structure for every approval request.
+This runbook assumes the current pilot mode:
 
-### Required fields
+1. GitHub event creates draft bundle
+2. n8n sends approval request to private Telegram
+3. human approves / revises / rejects
+4. if approved, human posts manually
+5. audit record is updated with outcome and final URL
+
+If direct publishing APIs are added later, do **not** use them by default for:
+
+- first post on a new channel
+- trust/privacy-heavy claims
+- mixed trusted/untrusted source material
+- anything that still needs live maintainer judgment
+
+---
+
+## 4) Start-of-shift operator check
+
+Before handling approval requests, quickly verify:
+
+- [ ] Telegram approval bot is posting into the correct private chat/group
+- [ ] you are acting as an allowlisted approver
+- [ ] the repo event link opens and is real
+- [ ] the publish destination is one you can access manually
+- [ ] screenshots/assets referenced by recent drafts are still current
+
+If any of these fail, pause the workflow and fix the plumbing before approving anything.
+
+---
+
+## 5) Intake gate: when a Telegram approval request arrives
+
+Every approval request should include:
 
 - request ID
 - event type
-- event URL
-- target channels
+- source event URL
+- requested channels
 - why now
 - primary proof link
 - supporting proof links
 - asset reference
 - risk notes
 - draft text
-- explicit actions
 
-### Generic template
+If any required field is missing:
 
-```text
-🟠 Approval request: {{request_id}}
+- choose **Revise** if the request is otherwise valid but incomplete
+- choose **Reject** if the request is noisy, unsafe, or not worth fixing
+- do **not** approve based on guesswork
 
-Event: {{event_type}}
-Source: {{event_url}}
-Why now: {{reason_this_is_worth_sharing_now}}
-Channels: {{channels}}
+### Trigger allowlist
 
-Primary proof:
-- {{primary_proof_link}}
+Approve consideration only if the event came from an allowed trigger in [`posting-signals.md`](./posting-signals.md):
 
-Supporting proof:
-- {{supporting_proof_link_1}}
-- {{supporting_proof_link_2}}
+- published release
+- merged PR with `announce`, `share`, or `launch-note`
+- issue labeled `share` or `launch-note`
 
-Asset:
-- {{asset_reference_or_none}}
+Hard stop if:
 
-Risk notes:
-- {{risk_note_1_or_none}}
-- {{risk_note_2_or_none}}
-
-Draft:
-{{draft_text}}
-
-Decision options:
-- Approve
-- Revise
-- Reject
-```
-
-### Callback payload recommendation
-
-Keep callback payloads short and machine-safe.
-
-```text
-approve|{{request_id}}
-revise|{{request_id}}
-reject|{{request_id}}
-```
-
-Store the rich context server-side in n8n; do not rely on callback payloads to carry the draft.
+- `do-not-amplify` is present
+- the event is from a fork or untrusted mirror
+- the draft depends on public comments or scraped content as if they were trusted proof
 
 ---
 
-## 5) Telegram message templates by event type
+## 6) Approval checklist
 
-These are copy skeletons for the approval message body.
+Use this checklist before pressing **Approve**.
 
-### A. Release approval request
+### A. Accuracy
 
-```text
-🟠 Release approval: {{request_id}}
+- [ ] the event is real and linked
+- [ ] the draft matches the linked release / PR / issue
+- [ ] the most important claim is supported by the source material
+- [ ] links, filenames, and repo references look correct
+- [ ] the post is understandable to someone who has not followed the repo closely
 
-Release: {{release_name}} ({{tag}})
-Source: {{release_url}}
-Default channels: Telegram, LinkedIn
-Why now: published release with user-visible changes
+### B. Trust / security
 
-Primary proof:
-- {{release_notes_url}}
+- [ ] no secrets, internal URLs, tokens, or private screenshots appear
+- [ ] no claim implies certification, audit, or endorsement
+- [ ] no claim overstates privacy boundaries
+- [ ] any trust/privacy language matches repo docs
+- [ ] the copy clearly frames outputs as assistive / draft / human-reviewed
 
-Supporting proof:
-- {{repo_url}}
-- {{demo_or_docs_url}}
+### C. Channel fit
 
-Asset:
-- {{screenshot_or_demo_asset}}
+- [ ] the requested channel(s) make sense for this event
+- [ ] the copy length fits the destination
+- [ ] the CTA is reasonable: try it, star it, read docs, or give feedback
+- [ ] if uncertain, Telegram-only is acceptable
 
-Risk notes:
-- manual publish only if trust/privacy wording appears
-- fresh approval required if claim set changes
+### D. Final decision rule
 
-Draft:
-{{release_draft}}
+Approve only if all four are true:
 
-Decision options:
-- Approve
-- Revise
-- Reject
-```
+- [ ] accurate
+- [ ] safe
+- [ ] worth sharing now
+- [ ] understandable without extra explanation
 
-### B. Merged PR / dev update approval request
+If not, use:
 
-```text
-🟠 Dev update approval: {{request_id}}
-
-PR: {{pr_title}}
-Source: {{pr_url}}
-Default channels: Telegram
-Why now: meaningful merged change with user-facing impact
-
-Primary proof:
-- {{pr_url}}
-
-Supporting proof:
-- {{repo_url}}
-- {{docs_or_demo_url}}
-
-Asset:
-- {{asset_reference_or_none}}
-
-Risk notes:
-- keep claims limited to what changed
-- avoid broad launch framing unless separately approved
-
-Draft:
-{{dev_update_draft}}
-
-Decision options:
-- Approve
-- Revise
-- Reject
-```
-
-### C. Asset/demo refresh approval request
-
-```text
-🟠 Asset refresh approval: {{request_id}}
-
-Item: {{issue_or_asset_title}}
-Source: {{issue_or_tracking_url}}
-Default channels: Telegram, optional X/Bluesky
-Why now: stronger visual/demo proof is available
-
-Primary proof:
-- {{asset_link}}
-
-Supporting proof:
-- {{repo_url}}
-- {{relevant_docs_url}}
-
-Asset:
-- {{asset_filename}}
-
-Risk notes:
-- do not share if the asset is stale or under-redacted
-- prefer Telegram-only if public value is uncertain
-
-Draft:
-{{asset_refresh_draft}}
-
-Decision options:
-- Approve
-- Revise
-- Reject
-```
+- **Revise** = worth sharing, but fixable
+- **Reject** = should not be promoted at all
 
 ---
 
-## 6) Telegram outcome messages
+## 7) Decision rubric
 
-Use these after the approver chooses an action.
+### Approve when
 
-### Approved
+- the event is allowlisted
+- proof is strong enough
+- claims are modest and defensible
+- the copy is channel-appropriate
+- assets are current and safe to share
 
-```text
-✅ Approved: {{request_id}}
+### Revise when
 
-Approver: {{approver_handle_or_id}}
-Channels: {{approved_channels}}
-Mode: {{manual_post_now|queue_for_scheduler}}
-Next step: {{owner}} will publish and record the final URL.
-```
+- the event is worth sharing but the copy is weak
+- the channels are too broad
+- the screenshot is stale, confusing, or unnecessary
+- the CTA is wrong
+- the wording is technically true but still too hype-y
+- a required field or proof link is missing
 
-### Revise requested
+### Reject when
 
-```text
-✏️ Revise requested: {{request_id}}
-
-Requested by: {{approver_handle_or_id}}
-Main fixes:
-- {{revision_note_1}}
-- {{revision_note_2}}
-- {{revision_note_3}}
-
-Status: returned to draft queue. No publish is allowed on the current version.
-```
-
-### Rejected
-
-```text
-🛑 Rejected: {{request_id}}
-
-Rejected by: {{approver_handle_or_id}}
-Reason:
-- {{rejection_reason_1}}
-- {{rejection_reason_2_or_none}}
-
-Status: closed. Do not publish this draft bundle.
-```
-
-### Timed out / expired
-
-```text
-⌛ Approval expired: {{request_id}}
-
-No action was taken before the timeout window.
-Status: closed with no publish.
-To continue, create a fresh approval request.
-```
+- the event is not worth promoting
+- the copy depends on unsupported claims
+- the materials are stale, private, or unsafe
+- the event is too internal / noisy / low-signal
+- a blocker from [`posting-signals.md`](./posting-signals.md) applies
 
 ---
 
-## 7) GitHub write-back templates
+## 8) What to do for each Telegram action
 
-Use these if n8n writes outcomes back to a tracking issue, campaign issue, or PR comment.
+## Approve
+
+When approving:
+
+1. confirm the exact draft version in Telegram
+2. ensure the requested channels are explicit
+3. press **Approve**
+4. treat the approved draft as frozen for manual posting
+5. post manually without material edits
+6. record final published URL(s)
+
+If you need to change the claim set, trust wording, or channel mix after approval, stop and create a fresh approval request.
+
+## Revise
+
+Use **Revise** when the draft is close but not ready.
+
+Include short, operator-useful notes such as:
+
+- tighten privacy wording
+- remove implication of automated security truth
+- Telegram only, not LinkedIn
+- asset is stale; resend with current screenshot
+- link release notes, not just repo root
+
+Revision notes should be concrete enough that the next draft can be approved or rejected quickly.
+
+## Reject
+
+Use **Reject** when the request should die, not loop.
+
+Common reasons:
+
+- low-signal internal change
+- unsupported claims required to make it sound interesting
+- asset is unsafe to publish
+- event should stay internal only
+- timing is wrong and there is no meaningful urgency
+
+A rejected draft bundle is closed. Do not manually post it anyway.
+
+---
+
+## 9) Manual posting checklist
+
+Once a request is approved, the publisher should do the following.
+
+### Before posting
+
+- [ ] copy the approved draft exactly or make only non-material formatting fixes
+- [ ] verify the destination account/channel is correct
+- [ ] verify the repo link is correct
+- [ ] verify the attached screenshot/asset is the approved one
+- [ ] confirm the post still matches repo reality at publish time
+
+### Allowed non-material edits
+
+These do **not** require re-approval if the meaning stays the same:
+
+- platform formatting cleanup
+- line breaks / bullet formatting
+- hashtag removal
+- shortening for platform character limits without changing claims
+- swapping in the same approved URL with tracking removed
+
+### Material edits that require fresh approval
+
+These **do** require a new approval request:
+
+- changing the claim set
+- changing trust/privacy wording
+- changing the target channels
+- adding new proof points
+- adding third-party praise or adoption language
+- replacing the asset with a meaningfully different screenshot
+
+### After posting
+
+- [ ] capture the final public URL
+- [ ] confirm the post is visible as intended
+- [ ] update the audit record / GitHub write-back
+- [ ] note any friction that should improve the template next time
+
+---
+
+## 10) Timeout / expiry handling
+
+If a request expires or sits too long:
+
+- do not infer approval
+- mark it expired / closed
+- require a fresh request ID to continue
+- re-check assets and source links before reissuing
+
+Use a fresh request instead of reviving an old one when:
+
+- the source event evolved
+- the screenshots changed
+- the copy changed materially
+- the timing context changed enough that “why now” is different
+
+---
+
+## 11) Audit log: minimum record to keep
+
+Keep one record per draft bundle.
+
+```yaml
+request_id: isa-{{yyyyMMdd}}-{{shortid}}
+status: pending # pending|approved|revise|rejected|published|expired
+source:
+  event_type: release # release|pr|issue
+  event_url: {{event_url}}
+  repo: aveerayy/info_security_analyzer
+channels_requested:
+  - telegram
+channels_approved:
+  - telegram
+proof:
+  primary: {{primary_proof_link}}
+  supporting:
+    - {{supporting_proof_link_1}}
+    - {{supporting_proof_link_2}}
+asset_reference: {{asset_reference_or_none}}
+risk_notes:
+  - {{risk_note_or_none}}
+approver:
+  telegram_id: {{approver_id_or_none}}
+  handle: {{approver_handle_or_none}}
+decision:
+  action: pending
+  decided_at: null
+  notes: []
+publish:
+  mode: manual
+  published_at: null
+  published_urls: []
+audit:
+  n8n_execution_id: {{execution_id}}
+  github_writeback_url: {{issue_comment_or_none}}
+```
+
+Minimum useful fields if you are in a rush:
+
+- request ID
+- decision
+- approver
+- timestamp
+- approved channels
+- final URL(s) if published
+
+---
+
+## 12) GitHub / audit write-back templates
+
+Use these if the workflow writes back to a tracking issue, PR comment, or internal log.
 
 ### Approval recorded
 
@@ -365,7 +377,7 @@ Approval recorded for `{{request_id}}`.
 - Channels: {{channels}}
 - Approver: {{approver_handle_or_id}}
 - Timestamp: {{approved_at_iso8601}}
-- Publish mode: {{manual|queued}}
+- Publish mode: manual
 - Audit ref: {{n8n_execution_or_internal_ref}}
 ```
 
@@ -420,76 +432,138 @@ Publish recorded for `{{request_id}}`.
 
 ---
 
-## 8) Audit record template
+## 13) Telegram templates
 
-Use one record per draft bundle.
+Use these as the operational baseline.
 
-```yaml
-request_id: isa-{{yyyyMMdd}}-{{shortid}}
-status: pending # pending|approved|revise|rejected|published|expired
-source:
-  event_type: release # release|pr|issue
-  event_url: {{event_url}}
-  repo: aveerayy/info_security_analyzer
-channels_requested:
-  - telegram
-channels_approved:
-  - telegram
-proof:
-  primary: {{primary_proof_link}}
-  supporting:
-    - {{supporting_proof_link_1}}
-    - {{supporting_proof_link_2}}
-asset_reference: {{asset_reference_or_none}}
-risk_notes:
-  - {{risk_note_or_none}}
-draft_hash: {{optional_hash_of_rendered_draft}}
-approver:
-  telegram_id: {{approver_id_or_none}}
-  handle: {{approver_handle_or_none}}
-decision:
-  action: pending
-  decided_at: null
-  notes: []
-publish:
-  mode: manual
-  published_at: null
-  published_urls: []
-audit:
-  n8n_execution_id: {{execution_id}}
-  github_writeback_url: {{issue_comment_or_none}}
+### Approval request
+
+```text
+🟠 Approval request: {{request_id}}
+
+Event: {{event_type}}
+Source: {{event_url}}
+Why now: {{reason_this_is_worth_sharing_now}}
+Channels: {{channels}}
+
+Primary proof:
+- {{primary_proof_link}}
+
+Supporting proof:
+- {{supporting_proof_link_1}}
+- {{supporting_proof_link_2}}
+
+Asset:
+- {{asset_reference_or_none}}
+
+Risk notes:
+- {{risk_note_1_or_none}}
+- {{risk_note_2_or_none}}
+
+Draft:
+{{draft_text}}
+
+Decision options:
+- Approve
+- Revise
+- Reject
+```
+
+### Callback payload recommendation
+
+Keep callback payloads short and machine-safe:
+
+```text
+approve|{{request_id}}
+revise|{{request_id}}
+reject|{{request_id}}
+```
+
+Store rich context server-side; do not depend on callback payloads for the full draft.
+
+### Approved outcome
+
+```text
+✅ Approved: {{request_id}}
+
+Approver: {{approver_handle_or_id}}
+Channels: {{approved_channels}}
+Mode: manual post now
+Next step: {{owner}} will publish and record the final URL.
+```
+
+### Revise outcome
+
+```text
+✏️ Revise requested: {{request_id}}
+
+Requested by: {{approver_handle_or_id}}
+Main fixes:
+- {{revision_note_1}}
+- {{revision_note_2}}
+- {{revision_note_3}}
+
+Status: returned to draft queue. No publish is allowed on the current version.
+```
+
+### Rejected outcome
+
+```text
+🛑 Rejected: {{request_id}}
+
+Rejected by: {{approver_handle_or_id}}
+Reason:
+- {{rejection_reason_1}}
+- {{rejection_reason_2_or_none}}
+
+Status: closed. Do not publish this draft bundle.
+```
+
+### Expired outcome
+
+```text
+⌛ Approval expired: {{request_id}}
+
+No action was taken before the timeout window.
+Status: closed with no publish.
+To continue, create a fresh approval request.
 ```
 
 ---
 
-## 9) n8n implementation notes
+## 14) Failure handling / kill switch
 
-Keep the workflow behavior boring and explicit.
+Pause the workflow immediately if any of these happen:
 
-- Verify GitHub webhook authenticity before parsing content.
-- Normalize all triggers into one internal draft object.
-- Generate a unique `request_id` before messaging Telegram.
-- Store approver allowlist server-side.
-- Reject Telegram callbacks from non-allowlisted users.
-- On **Revise**, require free-text notes.
-- On **Approve**, snapshot the final approved draft before any publish handoff.
-- On timeout, close the request explicitly; never infer approval.
-- If the draft text changes materially after approval, mint a new request ID and require re-approval.
+- Telegram requests are landing in the wrong chat
+- non-allowlisted users can approve
+- drafts include secrets, private screenshots, or broken links
+- n8n is writing noisy or sensitive logs
+- the system starts treating public/user input as trusted proof
+
+Disable order:
+
+1. stop manual posting
+2. disable the n8n publish/approval continuation step
+3. revoke or rotate the Telegram bot token if compromise is suspected
+4. review recent requests and close any ambiguous pending items
+
+When in doubt, fail closed.
 
 ---
 
-## 10) Minimal manual pilot operating mode
+## 15) Minimal operator flow
 
-Use this for the first real runs.
+Use this as the shortest correct path.
 
-1. GitHub event creates a draft bundle.
-2. n8n sends Telegram approval request.
-3. Maintainer approves, revises, or rejects.
-4. If approved, maintainer posts manually in the destination channel.
-5. n8n or maintainer records the final URL back into GitHub/audit log.
+1. receive Telegram approval request
+2. verify event, proof, channels, asset, and risk notes
+3. run the approval checklist
+4. choose **Approve / Revise / Reject**
+5. if approved, post manually with no material edits
+6. record final URL and outcome
+7. note what should be improved before the next cycle
 
-That keeps the risky part small:
+That is the intended boring path.
 
-- automation helps with drafting and recordkeeping
-- a human still owns the final outward post
-- scheduler/API tokens can stay out of scope until the process is stable
+If the process stops being boring, the workflow is not ready for more automation.
