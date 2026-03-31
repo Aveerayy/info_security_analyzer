@@ -13,6 +13,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 - [`posting-signals.md`](./posting-signals.md) — allowlisted repo events and hard blockers for draft-generation triggers
 - [`30-day-launch-plan.md`](./30-day-launch-plan.md) — weekly campaign plan, execution checklist, and success metrics
 - [`launch-week-metrics.md`](./launch-week-metrics.md) — daily launch-week review template with scorecards, signal-to-action defaults, and follow-up planning for stars, traffic, installs/runs, feedback, and channel performance
+- [`day-of-launch-scorecard.md`](./day-of-launch-scorecard.md) — minimal launch-day-only checklist and scorecard distilled from the operator packet, 7-day plan, and launch-week metrics docs
 - [`channel-strategy.md`](./channel-strategy.md) — channel-by-channel goals, audience, posting cadence, and guardrails
 - [`channel-execution-sequencing.md`](./channel-execution-sequencing.md) — exact posting order, timing windows, and follow-up cadence across GitHub, Telegram, LinkedIn, X/Bluesky, Hacker News, Reddit, and direct outreach
 - [`hn-reddit-operator-note.md`](./hn-reddit-operator-note.md) — practical execution note for when/how to post on Hacker News or Reddit, what to avoid, and how to handle replies without thrash

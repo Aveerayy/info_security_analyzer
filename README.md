@@ -202,6 +202,7 @@ Repo-local launch planning lives in [`docs/growth/`](./docs/growth/).
 
 Supporting docs:
 
+- [`day-of-launch-scorecard.md`](./docs/growth/day-of-launch-scorecard.md)
 - [`30-day-launch-plan.md`](./docs/growth/30-day-launch-plan.md)
 - [`7-day-execution-plan.md`](./docs/growth/7-day-execution-plan.md)
 - [`channel-strategy.md`](./docs/growth/channel-strategy.md)
