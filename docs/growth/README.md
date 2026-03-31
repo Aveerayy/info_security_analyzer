@@ -15,6 +15,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 - [`launch-week-metrics.md`](./launch-week-metrics.md) — daily launch-week review template with scorecards, signal-to-action defaults, and follow-up planning for stars, traffic, installs/runs, feedback, and channel performance
 - [`channel-strategy.md`](./channel-strategy.md) — channel-by-channel goals, audience, posting cadence, and guardrails
 - [`channel-execution-sequencing.md`](./channel-execution-sequencing.md) — exact posting order, timing windows, and follow-up cadence across GitHub, Telegram, LinkedIn, X/Bluesky, Hacker News, Reddit, and direct outreach
+- [`linkedin-x-bluesky-execution-pack.md`](./linkedin-x-bluesky-execution-pack.md) — operator-ready posting set for LinkedIn, X, and Bluesky with asset pairing, fallback variants, and reply guidance
 - [`messaging-and-assets.md`](./messaging-and-assets.md) — positioning, proof points, sample copy, and asset checklist
 - [`launch-assets.md`](./launch-assets.md) — copy-paste-ready release notes, social posts, outreach snippets, and reply templates
 - [`outreach-execution-templates.md`](./outreach-execution-templates.md) — maintainer/peer outreach templates, follow-up templates, timing, and lightweight tracking
