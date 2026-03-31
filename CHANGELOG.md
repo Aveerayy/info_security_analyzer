@@ -8,6 +8,7 @@ This repository can follow a lightweight, human-readable changelog format inspir
 
 ### Added
 - Release/community hygiene docs: changelog, release checklist, issue templates, and good-first-issue guidance.
+- Minimal operator-ready publish checklist for the GitHub release + Telegram announcement path.
 
 ### Changed
 - Contributor docs now point to release and issue hygiene resources.

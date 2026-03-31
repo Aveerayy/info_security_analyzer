@@ -4,6 +4,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 
 ## Files
 
+- [`telegram-github-publish-checklist.md`](./telegram-github-publish-checklist.md) — the shortest operator-ready checklist for the two live surfaces that matter first: GitHub release + Telegram announcement
 - [`launch-operator-packet.md`](./launch-operator-packet.md) — the canonical, execution-ready launch-week operator packet; open this first when one human needs to run the week from one place
 - [`7-day-execution-plan.md`](./7-day-execution-plan.md) — prioritized next-7-days plan with owners, required inputs, publish sequence, and a minimal launch checklist
 - [`marketing-automation-tooling-research.md`](./marketing-automation-tooling-research.md) — comparison of low-cost tooling, approval-loop designs, risks, and the recommended stack

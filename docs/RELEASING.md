@@ -1,50 +1,34 @@
 # Releasing Info Security Analyzer
 
-This project does not need a heavyweight release ceremony, but it does benefit from predictable trust signals:
+Use this when you are preparing a GitHub release and want the shortest operator-ready path.
 
-- clear release notes
-- an updated changelog
-- a version tag people can reference
-- a quick sanity check that docs still match reality
+## 1) Preflight
 
-## Suggested release flow
+- [ ] Decide the version/tag, for example `v0.1.0`
+- [ ] Confirm what is actually shipping
+- [ ] Note any user-visible changes, security/privacy changes, or deployment changes
 
-1. **Confirm scope**
-   - Decide what is shipping.
-   - Note any user-visible behavior changes, security fixes, or deployment changes.
+## 2) Update the release surface
 
-2. **Update docs**
-   - Update `CHANGELOG.md` under a new version heading.
-   - Update `README.md` if quickstart, screenshots, provider setup, or trust boundaries changed.
-   - Update `SECURITY.md` if reporting guidance or deployment risk guidance changed.
+- [ ] Update `CHANGELOG.md` under the new version heading
+- [ ] Update `README.md` if quickstart, screenshots, trust/privacy wording, or provider setup changed
+- [ ] Update `SECURITY.md` if disclosure/reporting guidance changed
+- [ ] Confirm demo/screenshot assets still reflect the current UI closely enough
 
-3. **Sanity check the app**
-   - Frontend still starts or builds.
-   - Backend still starts.
-   - Docker path still works if release notes mention Docker.
-   - Demo/screenshot assets still reflect the current UI closely enough.
+## 3) Run the lightweight quality gate
 
-4. **Create the release commit**
-   - Keep the commit focused.
-   - Prefer a message like `docs: prepare release v0.2.0` or `release: v0.2.0`.
+- [ ] Frontend still starts or builds
+- [ ] Backend still starts
+- [ ] Docker path still works if the release mentions Docker
+- [ ] No secrets or `.env` files are staged
+- [ ] Release notes mention security/privacy-impacting changes when relevant
 
-5. **Tag the release**
-   ```bash
-   git tag -a v0.2.0 -m "Release v0.2.0"
-   git push origin main --tags
-   ```
+## 4) Prepare the release notes
 
-6. **Publish GitHub release notes**
-   Include:
-   - what changed for users
-   - any security/privacy-relevant changes
-   - any migration or configuration notes
-   - known limitations if relevant
-
-## Release note template
+Use this template:
 
 ```md
-## Info Security Analyzer v0.2.0
+## Info Security Analyzer v0.1.0
 
 ### Highlights
 - Added ...
@@ -61,22 +45,53 @@ This project does not need a heavyweight release ceremony, but it does benefit f
 - This remains an assistive threat-modeling tool; human review is still required.
 ```
 
-## Lightweight quality gate
+Release notes should answer:
 
-Before tagging, verify at least these:
+- what changed for users
+- what changed for self-hosters
+- whether trust/privacy behavior changed
+- what limitations still matter
 
-- [ ] `CHANGELOG.md` updated
-- [ ] contributor/security docs still accurate
-- [ ] no secrets or `.env` files staged
-- [ ] release notes mention security/privacy-impacting changes
-- [ ] tag name matches the release notes
+## 5) Create the release commit
+
+- [ ] Keep the release commit focused
+- [ ] Prefer a message like `docs: prepare release v0.1.0` or `release: v0.1.0`
+
+## 6) Tag and publish
+
+```bash
+git tag -a v0.1.0 -m "Release v0.1.0"
+git push origin main --tags
+```
+
+If you are publishing a GitHub Release from the UI, make sure:
+
+- [ ] the tag matches the release title
+- [ ] the notes match `CHANGELOG.md`
+- [ ] the screenshot or asset used is current and safe to publish
+
+## 7) Optional follow-on publish
+
+If you are also announcing the release externally, use:
+
+- `docs/growth/telegram-github-publish-checklist.md`
+
+## Hard blockers
+
+Do **not** publish the release if any of these are true:
+
+- README is materially outdated
+- demo path is broken or misleading
+- screenshots are stale enough to confuse users
+- trust/privacy wording is inaccurate
+- secrets are staged
 
 ## Versioning suggestion
 
-If the project does not yet use strict semantic versioning, that is fine. Still prefer consistent tags such as:
+Strict semver is optional, but consistent tags help users and downstream references.
+
+Examples:
 
 - `v0.1.0`
 - `v0.1.1`
 - `v0.2.0`
-
-Even lightweight version tags help users, issue reporters, and downstream packagers refer to a known state.

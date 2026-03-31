@@ -198,7 +198,9 @@ Contributions are welcome.
 
 Repo-local launch planning lives in [`docs/growth/`](./docs/growth/).
 
-**Start here for this week’s launch:** [`launch-operator-packet.md`](./docs/growth/launch-operator-packet.md)
+**Fastest live publish path:** [`telegram-github-publish-checklist.md`](./docs/growth/telegram-github-publish-checklist.md)
+
+**Start here for this week’s broader launch:** [`launch-operator-packet.md`](./docs/growth/launch-operator-packet.md)
 
 Supporting docs:
 
