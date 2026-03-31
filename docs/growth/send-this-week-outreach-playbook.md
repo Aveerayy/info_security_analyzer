@@ -1,399 +1,254 @@
 # Send-this-week outreach playbook
 
-A practical operator guide for doing **real outreach this week** for **Info Security Analyzer** without re-reading the whole growth folder.
+A **minimal daily operator playbook** for doing real outreach this week for **Info Security Analyzer**.
 
-Use this when the goal is:
-- get the first 8-15 quality conversations
-- learn where the pitch or onboarding breaks
-- avoid over-posting before the repo surface is ready
+Open this when you want to know exactly:
+- who to contact today
+- how many messages to send
+- what single ask to use
+- when to follow up
+- when to stop and fix docs instead of sending more
 
-This playbook assumes the product is being positioned honestly:
-- **draft STRIDE findings**, not authoritative verdicts
-- **demo-first evaluation** before credentials where possible
+This is intentionally short. If other outreach docs are more detailed, treat **this file as the day-to-day execution source of truth** for this week.
+
+---
+
+## 0) Weekly goal
+
+Success this week is **not reach**.
+
+Success this week is:
+- **8-15 targeted sends** total
+- **3-5 useful replies**
+- repeated objections captured in one place
+- at least one docs or messaging fix from real feedback
+
+Position the product honestly every time:
+- it produces **draft STRIDE findings**
+- it is a **human-review aid**, not automated security truth
 - uploaded content **may be sent to the selected LLM provider** during analysis
 
 ---
 
-## 1) What success looks like this week
+## 1) Daily run order
 
-A good week is **not** "maximum impressions."
+Do outreach in this order only:
 
-A good week is:
-- 5-10 people with relevant backgrounds actually look at the repo or demo flow
-- 3-5 useful replies arrive
-- repeated objections are captured in one place
-- docs or messaging get tighter before broader public launch
+1. **Check landing surface first**
+   - README still accurate
+   - demo path still works
+   - trust/privacy wording still visible
+2. **Send a small batch**
+3. **Log every send immediately**
+4. **Handle replies before sending more**
+5. **Patch repeated confusion before expanding channels**
 
-Use outreach to create signal, not noise.
+Rule: if the same confusion appears **twice**, stop sending and fix the repo/docs first.
 
 ---
 
-## 2) Outreach order of operations
+## 2) Who to contact first
 
-Do outreach in this order:
+Use this priority order:
 
 1. **Trusted security peers**
 2. **AppSec / cloud / DevSecOps practitioners**
 3. **Adjacent OSS maintainers**
-4. **Warm communities** (Telegram / small group chats where self-promo is acceptable)
-5. **One public launch channel** after the above produces no major blockers
+4. **Warm communities**
+5. **One public launch channel** only if earlier feedback is stable
 
-Reason: this repo benefits more from honest technical feedback than from broad top-of-funnel traffic too early.
-
----
-
-## 3) Target categories and how to use them
-
-## Category A — trusted security peers
-
-**Who they are**
-- people who know your work or will reply candidly
-- staff/security engineers, architects, consultants, practitioner friends
-
-**Best ask**
-- setup friction
-- whether the README feels credible
-- whether the tool sounds over-claimed
-
-**Goal this week**
-- send **3-5** messages
-
-**What good looks like**
-- at least 2 real replies
-- at least 1 person actually tries the repo/demo
-
-**Do not ask for**
-- endorsements
-- public sharing in the first message
+Why: this project benefits more from honest technical feedback than broad attention too early.
 
 ---
 
-## Category B — AppSec / cloud / DevSecOps practitioners
+## 3) Daily quotas
 
-**Who they are**
-- people doing architecture reviews, security reviews, platform/security enablement, cloud risk review
+Keep volume low enough to respond well.
 
-**Best ask**
-- would this fit a real review workflow?
-- where would they hesitate?
-- what part of the trust/privacy story still feels vague?
+### Monday
+- send **3 peer DMs**
+- send **1 practitioner DM**
 
-**Goal this week**
-- send **2-4** messages
+### Tuesday
+- send **1-2 peer/practitioner DMs**
+- optionally make **1 warm community post** if docs still look solid
 
-**What good looks like**
-- 1-2 replies with workflow-based criticism
-- at least one comment on findings quality or positioning
+### Wednesday
+- **no new batch by default**
+- fix repeated objections
+- optionally send **1 maintainer DM**
 
-**Do not ask for**
-- stars first
-- a full product review
-- long unpaid testing sessions
+### Thursday
+- send **1-2 final DMs** only if reply load is manageable
+- send **one follow-up wave** for Monday contacts with no reply
 
----
+### Friday
+- decide **go / no-go** on **one** public post
+- only post if you have same-day reply time
 
-## Category C — adjacent OSS maintainers
-
-**Who they are**
-- maintainers of threat-modeling, diagram, AppSec, or security-workflow tools
-
-**Best ask**
-- docs clarity
-- positioning honesty
-- whether the repo explains scope and limits clearly
-
-**Goal this week**
-- send **1-2** messages
-
-**What good looks like**
-- one thoughtful reaction
-- one pointer about ecosystem fit, docs, or terminology
-
-**Do not ask for**
-- partnerships
-- backlinks
-- endorsements
-- collabs in the first touch
-
----
-
-## Category D — warm community posts
-
-**Who they are**
-- Telegram groups, small founder/security communities, or chats where light self-promo is normal
-
-**Best ask**
-- try the demo path
-- call out setup friction
-- point out misleading claims or weak findings
-
-**Goal this week**
-- make **1-2** posts total
-
-**What good looks like**
-- a few comments or DMs
-- one repeated question you can convert into a docs fix
-
-**Do not do**
-- multi-community blast posting on the same day
-- vague “thoughts?” posts
-- copy-paste spam in communities with overlapping members
-
----
-
-## Category E — public launch channel
-
-**Who they are**
-- Hacker News or one good-fit Reddit community
-
-**Best ask**
-- critique onboarding clarity
-- critique trust boundaries
-- critique output realism
-
-**Goal this week**
-- **0 or 1** public launch post, only after warm outreach
-
-**What good looks like**
-- serious technical discussion
-- objections that improve docs/product
-- no major trust mismatch between post and repo
-
-**Rule**
+### Hard limits
+- max **4-5 direct outreaches per day**
+- max **1 follow-up** per person
+- wait **3-4 days** before follow-up
 - do **not** do HN and Reddit on the same day
 
 ---
 
-## 4) Recommended send volume and cadence
+## 4) One ask per message
 
-Keep the volume low enough that replies can be handled well.
+Never send a message with multiple asks.
 
-## Monday / first outreach day
+### Ask menu
+- **setup** — where did setup stop feeling obvious?
+- **trust** — does the repo explain privacy and limits clearly enough?
+- **output** — do the findings feel useful as a first-pass review aid?
+- **positioning** — does this sound honest, or still over-claimed?
+- **workflow fit** — would this help in a real security review workflow?
 
-- send **3** trusted-peer DMs
-- send **1** practitioner DM
-- log all sends immediately
-
-## Tuesday
-
-- send **1-2** more peer/practitioner DMs
-- if the repo surface still looks stable, make **1 warm community post**
-
-## Wednesday
-
-- no new blast unless earlier replies are handled
-- patch repeated confusion in README/docs
-- send **1 maintainer outreach** if the repo surface still feels honest and current
-
-## Thursday
-
-- send **1-2** remaining DMs only if response load is manageable
-- do **one** follow-up for Monday contacts who did not reply
-
-## Friday
-
-- decide go / no-go on one public launch post
-- only post publicly if:
-  - no trust mismatch is showing up repeatedly
-  - demo path and quickstart still match reality
-  - there is time to answer same-day questions
-
-## Cadence rules
-
-- never send more than **4-5 direct outreaches in one day**
-- use **one follow-up max** per person
-- wait **3-4 days** before the follow-up
-- if no reply after follow-up, stop
-
-This project wants careful attention, not sales automation behavior.
+### Best mapping
+- **peer** -> setup or positioning
+- **practitioner** -> workflow fit or output
+- **maintainer** -> docs clarity or positioning
+- **community post** -> setup, weak findings, or trust wording
 
 ---
 
-## 5) Exact ask by segment
+## 5) DM skeleton
 
-Use **one ask per message**.
+Use this shape for almost every direct message:
 
-### Ask options
+> Hey {{name}} — I shipped a small OSS project called **Info Security Analyzer**. It turns architecture diagrams into **draft STRIDE findings** and report output.
+>
+> Thought of you because {{specific reason}}.
+>
+> If you have 5-10 minutes, I’d love blunt feedback on **{{one ask}}**. I’m specifically trying to catch anything unclear, unrealistic, or over-claimed before pushing it harder.
+>
+> Repo: {{repo-link}}
+>
+> No pressure if this week is packed.
 
-- **setup:** where did setup stop feeling obvious?
-- **trust:** does the repo explain privacy and limitations clearly enough?
-- **output:** do the findings look useful as a first-pass review aid?
-- **positioning:** does this sound honest, or does it still over-claim?
-- **workflow fit:** would this help in a real architecture/security review?
-
-## Best mapping
-
-- trusted peer -> **setup** or **positioning**
-- practitioner -> **workflow fit** or **output**
-- OSS maintainer -> **docs clarity** or **positioning**
-- community post -> **setup + weak findings + unclear trust language**
-
-Do not ask the same person for all five.
+Keep it short, mobile-readable, and personalized by at least one line.
 
 ---
 
-## 6) Reply-time expectations
+## 6) Warm community post skeleton
 
-If you send outreach, be ready to respond.
+> I’ve been working on an OSS tool called **Info Security Analyzer**.
+>
+> It turns architecture diagrams into **draft STRIDE findings** and report output. There’s a demo path, so people can inspect the workflow before wiring up credentials.
+>
+> If anyone tries it, the most useful feedback is:
+> - setup friction
+> - weak or misleading findings
+> - confusing trust/privacy wording
+>
+> Repo: {{repo-link}}
 
-### Same-day response required for
-- setup blockers
-- trust/privacy confusion
-- public comments in launch channels
-- thoughtful maintainer replies
-
-### Within 24 hours
-- practitioner feedback
-- someone who actually tried the demo or local setup
-- people asking clarifying questions in good faith
-
-### Safe to defer
-- feature requests
-- roadmap debates
-- integration asks unrelated to launch-week trust/adoption
-
-If response capacity is low, reduce sending volume before expanding channels.
+Do not blast multiple overlapping communities on the same day.
 
 ---
 
-## 7) Response handling playbook
+## 7) Reply handling
 
-Use this sequence for every meaningful reply:
+When someone replies with real feedback, do this:
 
-1. **Acknowledge specifically**
-2. **Restate the intended scope**
-3. **Capture the feedback in the log**
-4. **Fix docs/product if it repeats**
-5. **Reply with the update if you actually changed something**
+1. **acknowledge specifically**
+2. **restate scope honestly**
+3. **log the objection**
+4. **fix docs/product if it repeats**
+5. **reply back only if you actually changed something**
 
-## Example response shapes
+### Fast reply lines
 
-### If someone says setup was confusing
+**Setup confusion**
+> Thanks — that’s useful. Which step stopped feeling obvious?
 
-> Thanks — that’s useful. Which step stopped feeling obvious? I’m trying to tighten onboarding first, so that detail is high value.
+**Weak findings**
+> Appreciate the honesty. The goal is a faster first draft for review, not a final security judgment. If one example felt clearly off, that would help a lot.
 
-### If someone says the findings are weak
+**Trust/privacy concern**
+> Fair point. The intended model is that the backend processes uploaded content and analysis may be sent to the selected provider. If the repo wording still feels fuzzy, that’s exactly what I want to tighten.
 
-> Appreciate the honesty. The goal is a faster first draft for review, not a final security judgment. If you can summarize one example that felt clearly off, that would help me narrow whether the fix belongs in prompts, docs, or positioning.
-
-### If someone questions privacy/trust
-
-> Fair point. The intended model is: the backend processes uploaded content, and analysis may be sent to the selected provider. If the repo wording still feels fuzzy, that’s exactly the kind of thing I want to tighten.
-
-### If someone assumes this replaces threat modeling expertise
-
-> Totally fair concern. I’m trying to position it much more narrowly: assistive draft generation for human review, not automated security truth.
-
-### If someone is positive but vague
-
-> Glad it’s interesting. If you had to pick one thing to critique, I’d most want to know where setup or trust wording still feels weak.
+**Over-automation concern**
+> Totally fair. I’m trying to position it much more narrowly: assistive draft generation for human review, not automated security truth.
 
 ---
 
-## 8) What to log after every send or reply
+## 8) Lightweight tracking table
 
-Keep one simple table. Do not build CRM theater.
+Keep one simple table. No CRM theater.
 
 | Contact | Segment | Channel | Sent | Ask | Replied | Follow-up due | Status | Notes |
 |---|---|---|---|---|---|---|---|---|
 | Name | peer / practitioner / maintainer / community | DM / Telegram / LinkedIn | YYYY-MM-DD | setup / trust / output / positioning / workflow | yes/no | YYYY-MM-DD | new / replied / fixed / closed | short note |
 
-## Minimum notes to capture
-
+Minimum note fields:
 - who they are
-- what you asked them
-- what they actually objected to
+- what you asked
+- what they objected to
 - whether a repo/docs fix is needed
 
-If the same confusion appears twice, update docs before sending more outreach.
-
 ---
 
-## 9) Go / no-go rules for broader posting
+## 9) Stop / continue rules
 
-## Go to broader launch only if
-
+### Continue sending only if
 - README quickstart is still accurate
-- demo path works without credentials
-- trust/privacy language is visible and current
-- soft-launch feedback did not reveal a major credibility gap
-- there is time blocked to answer replies
+- demo path still matches reality
+- trust/privacy wording is visible
+- replies are being handled within 24 hours
+- no major credibility gap is repeating
 
-## No-go this week if
-
-- multiple people misread the product as fully automated threat modeling
+### Stop sending and patch first if
+- multiple people think this is fully automated threat modeling
 - multiple people cannot tell what happens to uploaded diagrams
-- setup questions keep repeating because the docs are unclear
-- screenshots or post copy no longer match the product
+- setup confusion repeats
+- post copy or screenshots no longer match the product
 
-If any of the above happens, stay in patch mode.
-
----
-
-## 10) Best channels for this week
-
-If time is limited, use only this stack:
-
-1. **Direct DMs to trusted peers**
-2. **Telegram soft launch**
-3. **LinkedIn soft launch**
-4. **One** public channel after fixes
-
-That is enough for a serious first outreach week.
+If any stop condition hits, stay in patch mode.
 
 ---
 
-## 11) Operator checklist
+## 10) Minimal daily checklist
 
 ### Before sending
-
 - [ ] README and demo path checked today
-- [ ] repo link copied correctly
-- [ ] one clear ask selected per target
-- [ ] message personalized by one line
-- [ ] response time available later today
+- [ ] one clear ask chosen
+- [ ] message personalized
+- [ ] time available to handle replies later today
 
 ### After sending
-
-- [ ] outreach log updated
+- [ ] log updated
 - [ ] follow-up date recorded
 - [ ] repeated objections tagged
-- [ ] docs fix created if confusion repeated
 
-### End of week
-
-- [ ] count useful replies
-- [ ] summarize top setup objections
-- [ ] summarize top trust objections
-- [ ] summarize best-performing ask
-- [ ] decide whether public launch is ready
+### End of day
+- [ ] useful replies counted
+- [ ] repeated objections summarized
+- [ ] docs/message fix created if confusion repeated
+- [ ] tomorrow’s send list reduced if response load is high
 
 ---
 
-## 12) Recommended default plan
+## 11) Default weekly plan
 
-If you want the simplest safe plan, do this:
+If you want the simplest safe version, do exactly this:
 
-- **3 trusted peer DMs on day 1**
-- **2 practitioner DMs on day 2**
-- **1 Telegram post on day 2 or 3**
-- **1 maintainer DM on day 3**
-- **1 follow-up wave on day 4**
-- **1 LinkedIn post on day 4 or 5**
-- **1 public post on day 5 or later only if the feedback is stable**
+- **Day 1:** 3 peer DMs + 1 practitioner DM
+- **Day 2:** 2 more DMs + 1 warm community post
+- **Day 3:** patch confusion + 1 maintainer DM
+- **Day 4:** 1 follow-up wave + up to 2 remaining DMs
+- **Day 5:** decide whether one public post is actually ready
 
-That should produce enough signal to improve the repo without making response handling messy.
+That is enough to generate real signal without creating reply debt.
 
 ---
 
-## 13) Source docs
+## 12) Related docs
 
-This playbook condenses guidance from:
+Use these only if you need more detail:
 - [`outreach-execution-templates.md`](./outreach-execution-templates.md)
 - [`early-user-feedback-playbook.md`](./early-user-feedback-playbook.md)
 - [`channel-strategy.md`](./channel-strategy.md)
-- [`weekly-execution-packet.md`](./weekly-execution-packet.md)
 - [`publish-this-week-packet.md`](./publish-this-week-packet.md)
 - [`launch-assets.md`](./launch-assets.md)
-
-When in doubt, keep the tone technically honest, the ask small, and the response loop tight.
