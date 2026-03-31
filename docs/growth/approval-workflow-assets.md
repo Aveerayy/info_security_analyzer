@@ -2,6 +2,8 @@
 
 _Use this for the real operator workflow for `info_security_analyzer`._
 
+> Need the short launch-day version? Open [`approval-operator-cheat-sheet.md`](./approval-operator-cheat-sheet.md) first. This file is the fuller reference.
+
 This file is the day-to-day runbook for the current recommended mode:
 
 > **draft automatically, approve explicitly, publish manually first**

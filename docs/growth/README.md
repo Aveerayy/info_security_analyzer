@@ -8,7 +8,8 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 - [`7-day-execution-plan.md`](./7-day-execution-plan.md) — prioritized next-7-days plan with owners, required inputs, publish sequence, and a minimal launch checklist
 - [`marketing-automation-tooling-research.md`](./marketing-automation-tooling-research.md) — comparison of low-cost tooling, approval-loop designs, risks, and the recommended stack
 - [`marketing-automation-provisioning-plan.md`](./marketing-automation-provisioning-plan.md) — implementation-ready provisioning checklist, approval workflow, secrets/access matrix, and phased rollout plan
-- [`approval-workflow-assets.md`](./approval-workflow-assets.md) — day-to-day operator runbook for the GitHub -> n8n -> Telegram approval loop, including approval checklists, manual-posting rules, write-back templates, and audit record examples
+- [`approval-operator-cheat-sheet.md`](./approval-operator-cheat-sheet.md) — short launch-day operator cheat sheet for the GitHub -> n8n -> Telegram approval loop; open this first when approvals are live
+- [`approval-workflow-assets.md`](./approval-workflow-assets.md) — fuller approval-loop reference with checklists, manual-posting rules, write-back templates, and audit record examples
 - [`posting-signals.md`](./posting-signals.md) — allowlisted repo events and hard blockers for draft-generation triggers
 - [`30-day-launch-plan.md`](./30-day-launch-plan.md) — weekly campaign plan, execution checklist, and success metrics
 - [`launch-week-metrics.md`](./launch-week-metrics.md) — daily launch-week review template with scorecards, signal-to-action defaults, and follow-up planning for stars, traffic, installs/runs, feedback, and channel performance
@@ -17,7 +18,7 @@ This folder contains repo-local planning for the first 30 days of launch and ado
 - [`messaging-and-assets.md`](./messaging-and-assets.md) — positioning, proof points, sample copy, and asset checklist
 - [`launch-assets.md`](./launch-assets.md) — copy-paste-ready release notes, social posts, outreach snippets, and reply templates
 - [`outreach-execution-templates.md`](./outreach-execution-templates.md) — maintainer/peer outreach templates, follow-up templates, timing, and lightweight tracking
-- [`send-this-week-outreach-playbook.md`](./send-this-week-outreach-playbook.md) — operator-ready outreach plan for this week with target categories, send cadence, go/no-go rules, and response handling
+- [`send-this-week-outreach-playbook.md`](./send-this-week-outreach-playbook.md) — canonical minimal daily operator playbook for this week’s outreach, including send order, daily quotas, one-ask rules, follow-up timing, and stop/patch gates
 - [`early-user-feedback-playbook.md`](./early-user-feedback-playbook.md) — launch-week feedback triage, response templates, severity buckets, and decision rules
 - [`publish-this-week-packet.md`](./publish-this-week-packet.md) — final, channel-specific publish packet for GitHub release, Telegram, LinkedIn, X/Bluesky, Hacker News, and Reddit
 
