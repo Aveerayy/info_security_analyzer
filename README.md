@@ -1,8 +1,9 @@
 # Info Security Analyzer
 
+[![CI](https://img.shields.io/github/actions/workflow/status/Aveerayy/info_security_analyzer/ci.yml?branch=main&label=CI)](https://github.com/Aveerayy/info_security_analyzer/actions/workflows/ci.yml)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
-![Security Policy](https://img.shields.io/badge/security-policy-blue.svg)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+[![Security Policy](https://img.shields.io/badge/security-policy-blue.svg)](SECURITY.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 Analyze architecture diagrams with AI-assisted STRIDE threat modeling.
 
@@ -11,6 +12,13 @@ Info Security Analyzer helps security engineers, architects, and developers turn
 **Best for:** fast first-pass threat modeling, security review prep, and stakeholder-friendly report exports.
 
 **Not for:** replacing human judgment, security sign-off, or guaranteeing completeness.
+
+## What you get in one pass
+
+- Upload a diagram or PDF and turn it into structured STRIDE-oriented findings
+- Review risks by component, flow, and summary recommendations
+- Export a stakeholder-friendly report instead of stitching together notes by hand
+- Preview the UX with the built-in demo report before adding any provider credentials
 
 ![Demo report preview](docs/assets/demo-report-placeholder.svg)
 
